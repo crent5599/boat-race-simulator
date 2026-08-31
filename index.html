@@ -1,0 +1,71 @@
+<!doctype html><html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#06376f"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="競艇SIM"><link rel="manifest" href="manifest.webmanifest">
+<title>競艇レースシミュレーター</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf4fa;color:#172338;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
+header{position:sticky;top:0;z-index:5;background:#06376f;color:white;padding:13px;font-weight:900}header small{display:block;font-weight:400}
+main{max-width:850px;margin:auto;padding:9px 9px 100px}.card{background:white;border-radius:14px;padding:11px;margin:9px 0;box-shadow:0 2px 8px #1232}
+h2{font-size:15px;color:#06376f;margin:0 0 9px}.info,.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+input,select{width:100%;height:40px;border:1px solid #cbd8e6;border-radius:8px;padding:0 8px;font-size:16px}
+.boat{border:1px solid #d5e0eb;border-radius:11px;margin:8px 0;overflow:hidden}.bh{padding:8px;font-weight:900}
+.b1{background:#fff}.b2{background:#222;color:#fff}.b3{background:#d62e34;color:#fff}.b4{background:#1e72bd;color:#fff}.b5{background:#efd000}.b6{background:#409348;color:#fff}
+.bb{padding:9px}.lab{font-size:10px;font-weight:800;color:#5c6c7f}.buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+button{height:47px;border:0;border-radius:10px;background:#06376f;color:#fff;font-size:15px;font-weight:900}.reset{background:white;color:#06376f;border:1px solid #9db2c9;margin-top:7px;width:100%}
+table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 3px;border-bottom:1px solid #e0e7ef;text-align:center}th{background:#f2f7fb}
+.combo{padding:7px 9px;border:1px solid #d7e2ed;border-radius:9px;margin:5px 0;display:flex;justify-content:space-between;font-weight:800}
+.note{font-size:10px;color:#66778a;line-height:1.5}.fixed{position:fixed;bottom:7px;left:7px;right:7px;background:white;border:2px solid #06376f;border-radius:13px;padding:8px;box-shadow:0 4px 18px #0003}
+</style></head><body>
+<header>🚤 競艇レースシミュレーター<small>6艇のデータから1000回シミュレーション</small></header>
+<main>
+<section class="card"><h2>レース情報</h2><div class="info"><input id="venue" placeholder="競艇場"><input id="race" placeholder="例：12R"></div></section>
+<section class="card"><h2>6艇の情報登録</h2><div id="boats"></div>
+<div class="note">平均ST・各タイムは入力値を能力に反映。過去10走枠番勝率は％で入力。クラスはA1/A2/B1/B2から選択。</div></section>
+<section class="card"><h2>シミュレーション</h2><div class="buttons">
+<button onclick="run(100)">100回</button><button onclick="run(1000)">1000回</button><button onclick="run(10000)">10000回</button>
+</div><button class="reset" onclick="resetAll()">リセット</button></section>
+<section class="card" id="res" style="display:none"><h2>📊 着順確率</h2><div id="table"></div></section>
+<section class="card" id="tri" style="display:none"><h2>🎯 三連単ランキング</h2><div id="combos"></div></section>
+<section class="card"><h2>シミュレーションについて</h2><div class="note">入力値を総合能力に変換し、1号艇のイン優位を考慮しつつランダムな展開を発生させます。実際のレース結果を予測・保証するものではありません。</div></section>
+<div class="fixed"><b>🏆 最有力：<span id="pick">—</span></b><br><span id="pickInfo" class="note">1000回実行すると表示されます</span></div>
+</main>
+<script>
+const cls={A1:1,A2:.72,B1:.48,B2:.25}, names=['1','2','3','4','5','6'];
+const area=document.getElementById('boats');
+for(let i=0;i<6;i++)area.innerHTML+=`<div class="boat"><div class="bh b${i+1}">${i+1}号艇</div><div class="bb"><div class="grid">
+<div><div class="lab">平均ST</div><input id="st${i}" type="number" step=".01" placeholder=".15"></div>
+<div><div class="lab">展示タイム</div><input id="ex${i}" type="number" step=".01" placeholder="6.80"></div>
+<div><div class="lab">周り足タイム</div><input id="turn${i}" type="number" step=".01" placeholder="6.90"></div>
+<div><div class="lab">直線タイム</div><input id="str${i}" type="number" step=".01" placeholder="6.85"></div>
+<div><div class="lab">過去10走 枠番勝率%</div><input id="lane${i}" type="number" step=".1" placeholder="40"></div>
+<div><div class="lab">選手クラス</div><select id="cl${i}"><option>A1</option><option>A2</option><option>B1</option><option>B2</option></select></div>
+</div></div></div>`;
+function v(id){let x=parseFloat(document.getElementById(id).value);return Number.isFinite(x)?x:null}
+function inv(a,x,fb=.5){let z=a.filter(x=>x!=null);if(x==null||z.length<2)return fb;let mn=Math.min(...z),mx=Math.max(...z);return mx==mn?.5:1-(x-mn)/(mx-mn)}
+function ability(){
+ let d=[];for(let i=0;i<6;i++)d.push({st:v('st'+i),ex:v('ex'+i),turn:v('turn'+i),str:v('str'+i),lane:v('lane'+i),cl:document.getElementById('cl'+i).value});
+ let ex=d.map(x=>x.ex),tu=d.map(x=>x.turn),stt=d.map(x=>x.str);
+ return d.map((x,i)=>Math.max(.03,
+   (.27*(x.st==null?.5:Math.max(0,Math.min(1,(.25-x.st)/.15)))+
+    .22*inv(ex,x.ex)+.18*inv(tu,x.turn)+.15*inv(stt,x.str)+
+    .10*(x.lane==null?.5:Math.max(0,Math.min(1,x.lane/100)))+.08*cls[x.cl]))
+   *[1,.84,.77,.70,.64,.59][i]));
+}
+function pick(w){let s=w.reduce((a,b)=>a+b,0),r=Math.random()*s;for(let i=0;i<w.length;i++){if((r-=w[i])<=0)return i}return w.length-1}
+function race(a){let p=a.map((x,i)=>x*(Math.exp((Math.random()-.5)*1.8))*(i==0?1.45:1));let first=pick(p);
+ let rem=[0,1,2,3,4,5].filter(i=>i!=first),second=rem[pick(rem.map(i=>a[i]*(i<3?1.08:1)))];
+ rem=rem.filter(i=>i!=second);let third=rem[pick(rem.map(i=>a[i]))];return[first,second,third]}
+function run(times){
+ let a=ability(),pos=Array.from({length:6},()=>[0,0,0]),tr={};
+ for(let k=0;k<times;k++){let r=race(a);r.forEach((x,p)=>pos[x][p]++);let key=r.map(x=>x+1).join('-');tr[key]=(tr[key]||0)+1}
+ let order=[0,1,2,3,4,5].sort((x,y)=>pos[y][0]-pos[x][0]);
+ document.getElementById('res').style.display='block';
+ document.getElementById('table').innerHTML='<table><tr><th>順位</th><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr>'+
+ order.map((i,k)=>`<tr><td>${k+1}</td><td><b>${i+1}</b></td><td>${(pos[i][0]/times*100).toFixed(1)}%</td><td>${(pos[i][1]/times*100).toFixed(1)}%</td><td>${(pos[i][2]/times*100).toFixed(1)}%</td><td><b>${(pos[i].reduce((a,b)=>a+b,0)/times*100).toFixed(1)}%</b></td></tr>`).join('')+'</table>';
+ let top=Object.entries(tr).sort((a,b)=>b[1]-a[1]).slice(0,15);
+ document.getElementById('tri').style.display='block';document.getElementById('combos').innerHTML=top.map((x,k)=>`<div class="combo"><span>${k+1}位　${x[0]}</span><span>${x[1]}回 (${(x[1]/times*100).toFixed(1)}%)</span></div>`).join('');
+ document.getElementById('pick').textContent=(order[0]+1)+'号艇';document.getElementById('pickInfo').textContent=times.toLocaleString()+'回：1着率 '+(pos[order[0]][0]/times*100).toFixed(1)+'%';
+}
+function resetAll(){document.querySelectorAll('input').forEach(x=>x.value='');document.querySelectorAll('select').forEach(x=>x.selectedIndex=0);document.getElementById('res').style.display='none';document.getElementById('tri').style.display='none';document.getElementById('pick').textContent='—';document.getElementById('pickInfo').textContent='1000回実行すると表示されます'}
+</script></body></html>
