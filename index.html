@@ -3,105 +3,179 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#06376f">
+<meta name="theme-color" content="#0b3f7a">
 <title>競艇レースシミュレーター</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#eef4f8;color:#17263a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
-header{background:#06376f;color:#fff;padding:15px 13px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0003}
-h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:11px}
-main{max-width:900px;margin:auto;padding:10px 9px 100px}.card{background:#fff;border-radius:15px;padding:13px;margin:10px 0;box-shadow:0 3px 12px #0002}h2{margin:0 0 11px;color:#06376f;font-size:17px}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.step{border:1px solid #cbd9e6;border-radius:10px;padding:10px 7px;text-align:center;font-size:11px;font-weight:800}.step b{display:block;font-size:20px;margin-bottom:3px}
-input,select{width:100%;height:44px;border:1px solid #b9cadb;border-radius:9px;padding:0 9px;font-size:16px;background:#fff}
-.upload{border:2px dashed #a9bfd2;border-radius:12px;padding:11px;margin:8px 0;background:#f8fbfd}.upload label{font-weight:900;color:#06376f;display:block;margin-bottom:7px}.upload input{height:auto;border:0;padding:0;font-size:13px}
-button{border:0;border-radius:10px;background:#06376f;color:#fff;font-weight:900;font-size:15px;height:50px;padding:0 14px}.wide{width:100%}.green{background:#138a51}.gray{background:#fff;color:#06376f;border:1px solid #a8bbcd}
-.progress{margin-top:9px;font-size:11px;color:#5e7083;line-height:1.5;white-space:pre-wrap}.bar{height:8px;background:#dbe5ed;border-radius:99px;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;width:0;background:#06376f;transition:.2s}
-.boat{border:1px solid #cad7e3;border-radius:12px;overflow:hidden;margin:9px 0}.boat-title{padding:9px;font-weight:900}.n1{background:#fff}.n2{background:#222;color:#fff}.n3{background:#e52f4e;color:#fff}.n4{background:#2376bd;color:#fff}.n5{background:#f2d21b}.n6{background:#35a63b;color:#fff}
-.fields{padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.field label{display:block;font-size:10px;font-weight:800;color:#52687d;margin-bottom:3px}
-.run{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:7px}
-table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 3px;border-bottom:1px solid #e0e8ef;text-align:center}th{background:#f1f6fa;color:#06376f}
-.combo{display:flex;justify-content:space-between;padding:9px;border:1px solid #d7e2ec;border-radius:9px;margin:5px 0;font-weight:800}.best{font-size:21px;color:#06376f;font-weight:900}.note{font-size:11px;color:#62758a;line-height:1.6}
-@media(max-width:520px){.fields{grid-template-columns:1fr}.steps{gap:4px}.step{padding:8px 3px;font-size:10px}.step b{font-size:18px}}
+:root{--navy:#0b3f7a;--blue:#1769d1;--purple:#7146d9;--bg:#eef4f8;--card:#fff;--line:#dbe5ef;--text:#14233a;--muted:#6f8095;--good:#16884a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--text)}
+header{background:linear-gradient(135deg,#082e61,#14559a);color:#fff;padding:22px 18px 20px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #0002}
+header h1{font-size:23px;margin:0 0 5px;font-weight:800}header p{margin:0;font-size:13px;opacity:.9}
+main{max-width:1050px;margin:auto;padding:14px 12px 50px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:#fff;border-radius:18px;padding:16px;box-shadow:0 4px 16px #18385c12;margin-bottom:14px;border:1px solid #e5edf5}
+.card h2{font-size:19px;margin:0 0 13px;display:flex;gap:9px;align-items:center}.num{width:29px;height:29px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;background:var(--blue);font-size:14px;font-weight:800}
+.uploads{display:grid;grid-template-columns:1fr 1fr;gap:10px}.upload{border:1.5px dashed #b7cbe0;border-radius:14px;padding:12px;background:#fbfdff}.upload strong{display:block;font-size:14px;margin-bottom:5px}.upload small{display:block;color:var(--muted);line-height:1.5;min-height:40px}
+input[type=file]{display:none}.pick{display:block;text-align:center;background:#1769d1;color:white;padding:11px;border-radius:9px;font-weight:700;cursor:pointer;margin-top:8px}.status{font-size:12px;margin-top:8px;color:var(--muted);word-break:break-all}.ok{color:var(--good);font-weight:700}
+button{border:0;border-radius:11px;padding:13px 15px;font-size:15px;font-weight:800;cursor:pointer}.primary{background:#1769d1;color:white;width:100%;margin-top:11px}.run{background:var(--purple);color:white;width:100%;font-size:17px;padding:15px}.outline{background:white;border:1px solid #afc3da;color:var(--navy)}
+.notice{background:#f1faf4;border:1px solid #b9e1c7;padding:11px;border-radius:10px;color:#23653c;font-size:13px;margin-top:10px}.warn{background:#fff8e8;border-color:#efd38c;color:#75570b}
+.inputs6{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.lane{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.laneHead{padding:7px;text-align:center;font-weight:800}.l1{background:#f8f8f8}.l2{background:#666;color:#fff}.l3{background:#ed3151;color:#fff}.l4{background:#3191d8;color:#fff}.l5{background:#f7d92d}.l6{background:#31ad2e;color:#fff}.laneBody{padding:8px}.field{margin-bottom:7px}.field label{display:block;font-size:10px;color:#6e7e91;margin-bottom:3px}.field input,.field select{width:100%;padding:8px 5px;border:1px solid #cbd8e5;border-radius:7px;font-size:14px;text-align:center;background:#fff;color:#17263c}
+.simBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.simBtns button{background:#fff;border:1px solid #afc3da;color:var(--navy)}.simBtns button.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+.progress{height:9px;background:#e8edf4;border-radius:99px;overflow:hidden;margin:11px 0}.bar{height:100%;width:0;background:var(--purple);transition:.2s}.resultTable{width:100%;border-collapse:collapse;font-size:13px}.resultTable th,.resultTable td{border:1px solid #dbe3ec;padding:8px;text-align:center}.resultTable th{background:#f3f7fb}.combo{font-weight:800;letter-spacing:1px}.rank{font-size:11px;color:#728198}.empty{padding:18px;text-align:center;color:#718096}
+.results{display:none}.results.show{display:block}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+footer{font-size:11px;color:#728198;text-align:center;padding:8px 0 20px}
+@media(max-width:760px){header{position:relative}.grid,.two{display:block}.uploads{grid-template-columns:1fr}.inputs6{grid-template-columns:repeat(2,1fr)}main{padding:10px}.card{padding:13px;border-radius:15px}.card h2{font-size:18px}.laneBody{padding:9px}.field input,.field select{font-size:15px;padding:10px}.simBtns button{padding:12px 5px}}
+@media(min-width:761px){.full{grid-column:1/-1}}
 </style>
 </head>
 <body>
-<header><h1>🚤 競艇レースシミュレーター</h1><p>スクショ3枚 → 自動入力 → 1000回シミュレーション</p></header>
+<header><h1>🚤 競艇レースシミュレーター</h1><p>スクショから読み取り → データ確認 → シミュレーション</p></header>
 <main>
-<div class="card">
-<h2>📸 スクショから自動入力</h2>
-<div class="steps"><div class="step"><b>①</b>出走表</div><div class="step"><b>②</b>展示タイム</div><div class="step"><b>③</b>過去10走</div></div>
-<div class="upload"><label>① 出走表スクショ</label><input id="shot1" type="file" accept="image/*"></div>
-<div class="upload"><label>② 展示・一周・まわり足・直線スクショ</label><input id="shot2" type="file" accept="image/*"></div>
-<button class="wide green" onclick="readShots()">📷 2枚を読み取って自動入力</button>
-<div class="progress" id="status">まだ読み取りしていません。</div><div class="bar"><i id="bar"></i></div>
+<div class="grid">
+<section class="card">
+<h2><span class="num">1</span>スクショを読み取る</h2>
+<div class="uploads">
+<div class="upload"><strong>① 出走表スクショ</strong><small>級別・平均STを読み取ります。写真ライブラリから選択できます。</small><label class="pick" for="shot1">写真を選択</label><input id="shot1" type="file" accept="image/*"><div id="status1" class="status">未選択</div></div>
+<div class="upload"><strong>② 展示データスクショ</strong><small>展示・まわり足・直線を読み取ります。</small><label class="pick" for="shot2">写真を選択</label><input id="shot2" type="file" accept="image/*"><div id="status2" class="status">未選択</div></div>
+</div>
+<button class="primary" id="ocrBtn">✨ 2枚の画像を読み取る</button>
+<div id="ocrStatus" class="notice" style="display:none"></div><div class="progress" id="progressWrap" style="display:none"><div class="bar" id="bar"></div></div>
+</section>
+
+<section class="card">
+<h2><span class="num" style="background:#f09a19">2</span>過去10走 枠番別勝率を入力</h2>
+<p style="font-size:13px;color:#718096;margin-top:-4px">ここだけは手入力です。各艇の「枠番別勝率」を%で入力してください。</p>
+<div class="inputs6" id="winInputs"></div>
+<div class="notice">例：32.5 → 32.5%　※勝率はシミュレーションの補正材料として使用します。</div>
+</section>
+
+<section class="card full">
+<h2><span class="num" style="background:#22a05a">3</span>6艇データ確認・修正</h2>
+<p style="font-size:13px;color:#718096;margin-top:-4px">OCR結果を必ず確認してください。空欄・誤認識はここで修正できます。</p>
+<div style="overflow-x:auto"><table class="resultTable" id="dataTable"></table></div>
+</section>
+
+<section class="card">
+<h2><span class="num" style="background:#7146d9">4</span>シミュレーション実行</h2>
+<div class="simBtns">
+<button data-n="100">100回</button><button class="active" data-n="1000">1000回</button><button data-n="10000">10000回</button>
+</div>
+<button class="run" id="runBtn">▶ シミュレーション開始</button>
+<div id="runStatus" class="status"></div>
+</section>
+
+<section class="card">
+<h2>⚙️ シミュレーションについて</h2>
+<ul style="margin:0;padding-left:20px;color:#66798e;font-size:13px;line-height:1.8">
+<li>平均ST・展示タイム・まわり足・直線タイムを数値化</li>
+<li>選手クラス・枠番別勝率・コースの優位性を加味</li>
+<li>各試行でランダムな展開差を加えて順位を決定</li>
+<li>実際のレース結果を保証するものではありません</li>
+</ul>
+</section>
 </div>
 
-<div class="card"><h2>レース情報</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="venue" placeholder="競艇場"><input id="race" placeholder="例：12R"></div></div>
-
-<div class="card"><h2>📝 6艇の入力内容</h2><div id="boats"></div>
-<div class="note">OCRで自動入力した後も、数値は自由に修正できます。<b>過去10走 枠番勝率（%）だけは手入力</b>です。画像の状態によってOCRが誤ることがあるため、実行前に一度確認してください。</div></div>
-
-<div class="card"><h2>🎲 シミュレーション</h2><div class="run"><button onclick="simulate(100)">100回</button><button onclick="simulate(1000)">1000回</button><button onclick="simulate(10000)">10000回</button></div><button class="wide gray" style="margin-top:8px" onclick="resetAll()">入力・結果をリセット</button></div>
-
-<div class="card" id="result" style="display:none"><h2>📊 着順確率</h2><div id="table"></div></div>
-<div class="card" id="tri" style="display:none"><h2>🎯 三連単ランキング</h2><div id="combos"></div></div>
-<div class="card" id="summary" style="display:none"><h2>🏆 総合結果</h2><div id="summaryText"></div></div>
+<section class="card results" id="results">
+<h2><span class="num" style="background:#7146d9">5</span>シミュレーション結果</h2>
+<div class="two">
+<div><h3>着順別確率</h3><table class="resultTable" id="probTable"></table></div>
+<div><h3>三連単 出現ランキング</h3><table class="resultTable" id="comboTable"></table></div>
+</div>
+<div style="margin-top:12px"><button class="outline" id="resetBtn">入力・結果をリセット</button></div>
+</section>
+<footer>※ OCRの読み取り精度には限界があります。シミュレーション前に入力値を確認してください。</footer>
 </main>
 
 <script>
-const cls={A1:1,A2:.72,B1:.48,B2:.25}, colors=['n1','n2','n3','n4','n5','n6'];
-let s='<div class="boat"><div class="boat-title n1">1号艇</div><div class="fields">'+field(0,'平均ST','.15')+field(0,'展示タイム','6.80')+field(0,'周り足タイム','7.80')+field(0,'直線タイム','7.75')+field(0,'過去10走 枠番勝率（%）','40')+select(0)+'</div></div>';
-for(let i=1;i<6;i++)s+='<div class="boat"><div class="boat-title '+colors[i]+'">'+(i+1)+'号艇</div><div class="fields">'+field(i,'平均ST','.15')+field(i,'展示タイム','6.80')+field(i,'周り足タイム','7.80')+field(i,'直線タイム','7.75')+field(i,'過去10走 枠番勝率（%）','40')+select(i)+'</div></div>';
-document.getElementById('boats').innerHTML=s;
-function field(i,l,p){return '<div class="field"><label>'+l+'</label><input id="st_'+i+'" type="number" step=".01" inputmode="decimal" placeholder="'+p+'"></div>'}
-function select(i){return '<div class="field"><label>選手クラス</label><select id="cl_'+i+'"><option>A1</option><option>A2</option><option>B1</option><option>B2</option></select></div>'}
-function setVal(id,v){if(v!==null&&v!==undefined&&!isNaN(v))document.getElementById(id).value=v}
-function nums(text){return (text.match(/\d+\.\d+|\d+/g)||[]).map(Number)}
-async function ocr(file,lang='eng'){
- if(!file)return '';
- const r=await Tesseract.recognize(file,lang,{logger:m=>{
-   if(m.status==='recognizing text'){document.getElementById('status').textContent='OCR処理中… '+Math.round((m.progress||0)*100)+'%';}
- }});
- return r.data.text||'';
+const state={n:1000,shots:[null,null],boats:Array.from({length:6},(_,i)=>({lane:i+1,cls:"",st:"",ex:"",turn:"",straight:"",win:""}))};
+const colors=["l1","l2","l3","l4","l5","l6"];
+
+function renderWinInputs(){
+ const el=document.getElementById("winInputs"); el.innerHTML="";
+ state.boats.forEach((b,i)=>{el.innerHTML+=`<div class="lane"><div class="laneHead ${colors[i]}">${i+1}号艇</div><div class="laneBody"><input aria-label="${i+1}号艇 枠番勝率" inputmode="decimal" type="number" min="0" max="100" step="0.1" placeholder="勝率 %" data-win="${i}" value="${b.win}"></div></div>`});
+ el.querySelectorAll("[data-win]").forEach(x=>x.oninput=e=>state.boats[+e.target.dataset.win].win=e.target.value);
 }
-function sixRows(text, pattern){
- const lines=text.split(/\n/).map(x=>x.trim()).filter(Boolean);
- let out=[];
- for(const line of lines){
-   const ns=nums(line);
-   if(ns.length>=6) out.push(ns);
- }
- return out.slice(0,6);
+function renderTable(){
+ const t=document.getElementById("dataTable");
+ t.innerHTML=`<thead><tr><th>艇</th><th>級別</th><th>平均ST<br>小さいほど有利</th><th>展示</th><th>まわり足</th><th>直線</th><th>過去10走<br>勝率%</th></tr></thead><tbody>`+
+ state.boats.map((b,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}</td>
+<td><input class="cell" data-k="cls" data-i="${i}" value="${b.cls}" placeholder="A1"></td>
+<td><input class="cell" data-k="st" data-i="${i}" inputmode="decimal" value="${b.st}" placeholder=".16"></td>
+<td><input class="cell" data-k="ex" data-i="${i}" inputmode="decimal" value="${b.ex}" placeholder="6.80"></td>
+<td><input class="cell" data-k="turn" data-i="${i}" inputmode="decimal" value="${b.turn}" placeholder="7.94"></td>
+<td><input class="cell" data-k="straight" data-i="${i}" inputmode="decimal" value="${b.straight}" placeholder="7.75"></td>
+<td><input class="cell" data-k="win" data-i="${i}" inputmode="decimal" value="${b.win}" placeholder="32.5"></td></tr>`).join("")+"</tbody>";
+ t.querySelectorAll(".cell").forEach(x=>x.oninput=e=>state.boats[+e.target.dataset.i][e.target.dataset.k]=e.target.value);
 }
-async function readShots(){
- const f1=document.getElementById('shot1').files[0], f2=document.getElementById('shot2').files[0];
- if(!f1||!f2){alert('①出走表と②展示スクショの2枚を選択してください。');return}
- const st=document.getElementById('status'), bar=document.getElementById('bar');
+renderWinInputs();renderTable();
+
+document.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-n]").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.n=+b.dataset.n});
+
+function readFile(id,statusId,idx){
+ document.getElementById(id).onchange=e=>{state.shots[idx]=e.target.files[0]||null;const s=document.getElementById(statusId);s.textContent=state.shots[idx]?"✓ "+state.shots[idx].name:"未選択";s.className="status ok"};
+}
+readFile("shot1","status1",0);readFile("shot2","status2",1);
+
+function loadImage(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);res(im)};im.onerror=rej;im.src=u})}
+async function cellOCR(im,x1,y1,x2,y2,whitelist){
+ const c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*(x2-x1)));c.height=Math.max(1,Math.round(im.height*(y2-y1)));
+ const ctx=c.getContext("2d");ctx.imageSmoothingEnabled=false;ctx.drawImage(im,im.width*x1,im.height*y1,im.width*(x2-x1),im.height*(y2-y1),0,0,c.width,c.height);
+ const r=await Tesseract.recognize(c,"eng",{logger:m=>{if(m.status==="recognizing text"){}},tessedit_pageseg_mode:"7",tessedit_char_whitelist:whitelist});
+ return r.data.text.trim().replace(/,/g,"");
+}
+async function doOCR(){
+ if(!state.shots[0]||!state.shots[1]){alert("①出走表と②展示データの2枚を選択してください。");return}
+ const st=document.getElementById("ocrStatus"),bar=document.getElementById("bar"),pw=document.getElementById("progressWrap");st.style.display="block";pw.style.display="block";
+ st.textContent="OCRエンジンを準備しています…";bar.style.width="5%";
  try{
-  st.textContent='① 出走表を読み取っています…';bar.style.width='10%';
-  const t1=await ocr(f1,'jpn+eng');bar.style.width='33%';
-  // Average ST: collect decimal values in the text, favoring values in .xx form.
-  const sts=[...t1.matchAll(/(?:^|\\s)\\.(\\d{2})(?=\\s|$)/gm)].map(m=>Number('.'+m[1]));
-  const classes=[...t1.matchAll(/\\b(A1|A2|B1|B2)\\b/g)].map(m=>m[1]);
-  for(let i=0;i<6;i++){ if(sts[i]!=null)setVal('st_'+i,sts[i]); if(classes[i])document.getElementById('cl_'+i).value=classes[i];}
-  st.textContent='② 展示・一周・まわり足・直線を読み取っています…';
-  const t2=await ocr(f2,'eng');bar.style.width='66%';
-  const lines2=t2.split(/\n/).map(x=>nums(x)).filter(a=>a.length>=4);
-  // Typical OCR returns one row per boat; use the first four decimals per row.
-  let rows2=lines2.filter(a=>a.filter(v=>v>6&&v<10).length>=4).map(a=>a.filter(v=>v>6&&v<10).slice(0,4)).slice(0,6);
-  for(let i=0;i<Math.min(6,rows2.length);i++){setVal('st_'+i, getOrKeep('st_'+i)); setVal('ex_'+i,rows2[i][0]); setVal('turn_'+i,rows2[i][2]); setVal('str_'+i,rows2[i][3]);}
-  bar.style.width='100%';
-  st.textContent='✅ 2枚の読み取り完了。過去10走 枠番勝率は手入力してください。';
- }catch(e){console.error(e);st.textContent='⚠️ 読み取り中にエラーが発生しました。画像を確認して再実行してください。'}
+  const [im1,im2]=await Promise.all([loadImage(state.shots[0]),loadImage(state.shots[1])]);
+  // These normalized regions match the screenshot layout supplied by the user.
+  for(let i=0;i<6;i++){
+   const y1=.323+i*.0757, y2=y1+.058;
+   state.boats[i].cls=(await cellOCR(im1,.135,y1,.215,y2,"AB12"))||state.boats[i].cls;
+   state.boats[i].st=(await cellOCR(im1,.595,y1,.68,y2,"0123456789."))||state.boats[i].st;
+   bar.style.width=(10+i*10)+"%";
+  }
+  for(let i=0;i<6;i++){
+   const y1=.323+i*.0757, y2=y1+.058;
+   state.boats[i].ex=(await cellOCR(im2,.525,y1,.685,y2,"0123456789."))||state.boats[i].ex;
+   state.boats[i].turn=(await cellOCR(im2,.685,y1,.84,y2,"0123456789."))||state.boats[i].turn;
+   state.boats[i].straight=(await cellOCR(im2,.84,y1,.995,y2,"0123456789."))||state.boats[i].straight;
+   bar.style.width=(70+i*5)+"%";
+  }
+  renderTable();bar.style.width="100%";st.innerHTML="✅ 読み取り完了。<br>下の「6艇データ確認・修正」で数値を確認してください。";
+ }catch(e){console.error(e);st.innerHTML="⚠️ OCRでエラーが発生しました。画像を確認するか、下の表へ手入力してください。";bar.style.width="100%"}
 }
-function getOrKeep(id){return parseFloat(document.getElementById(id).value)||''}
-function g(id){const x=parseFloat(document.getElementById(id).value);return Number.isFinite(x)?x:null}
-function inv(a,x){const v=a.filter(x=>x!==null);if(x===null||v.length<2)return .5;const mn=Math.min(...v),mx=Math.max(...v);return mn===mx?.5:1-(x-mn)/(mx-mn)}
-function ability(){let d=[];for(let i=0;i<6;i++)d.push({st:g('st_'+i),ex:g('ex_'+i),turn:g('turn_'+i),str:g('str_'+i),lane:g('lane_'+i),cl:document.getElementById('cl_'+i).value});let ex=d.map(x=>x.ex),tu=d.map(x=>x.turn),sr=d.map(x=>x.str);return d.map((x,i)=>{let st=x.st==null?.5:Math.max(0,Math.min(1,(.25-x.st)/.15)),lane=x.lane==null?.5:Math.max(0,Math.min(1,x.lane/100));let a=.27*st+.22*inv(ex,x.ex)+.18*inv(tu,x.turn)+.15*inv(sr,x.str)+.10*lane+.08*cls[x.cl];return Math.max(.03,a*[1,.84,.77,.70,.64,.59][i])})}
-function choose(w){let s=w.reduce((a,b)=>a+b,0),r=Math.random()*s;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i}return w.length-1}
-function simRace(a){let first=choose(a.map((x,i)=>x*Math.exp((Math.random()-.5)*1.8)*(i===0?1.45:1)));let rem=[0,1,2,3,4,5].filter(i=>i!==first);let second=rem[choose(rem.map(i=>a[i]*(i<3?1.08:1)))];rem=rem.filter(i=>i!==second);let third=rem[choose(rem.map(i=>a[i]))];return[first,second,third]}
-function simulate(n){const a=ability(),pos=Array.from({length:6},()=>[0,0,0]),tri={};for(let k=0;k<n;k++){const r=simRace(a);r.forEach((x,p)=>pos[x][p]++);const key=r.map(x=>x+1).join('-');tri[key]=(tri[key]||0)+1}const order=[0,1,2,3,4,5].sort((a,b)=>pos[b][0]-pos[a][0]),pct=x=>((x/n)*100).toFixed(1);document.getElementById('result').style.display='block';document.getElementById('table').innerHTML='<table><tr><th>順位</th><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr>'+order.map((i,k)=>'<tr><td>'+(k+1)+'</td><td><b>'+(i+1)+'号艇</b></td><td>'+pct(pos[i][0])+'%</td><td>'+pct(pos[i][1])+'%</td><td>'+pct(pos[i][2])+'%</td><td><b>'+pct(pos[i][0]+pos[i][1]+pos[i][2])+'%</b></td></tr>').join('')+'</table>';const top=Object.entries(tri).sort((a,b)=>b[1]-a[1]).slice(0,15);document.getElementById('tri').style.display='block';document.getElementById('combos').innerHTML=top.map((x,k)=>'<div class="combo"><span>'+(k+1)+'位　'+x[0]+'</span><span>'+x[1]+'回 ('+pct(x[1])+'%)</span></div>').join('');document.getElementById('summary').style.display='block';let w=order[0];document.getElementById('summaryText').innerHTML='<div class="best">'+(w+1)+'号艇</div><p>1着率 <b>'+pct(pos[w][0])+'%</b> / 3連率 <b>'+pct(pos[w][0]+pos[w][1]+pos[w][2])+'%</b></p>'}
-function resetAll(){document.querySelectorAll('input').forEach(x=>x.value='');document.querySelectorAll('select').forEach(x=>x.selectedIndex=0);['result','tri','summary'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('status').textContent='まだ読み取りしていません。';document.getElementById('bar').style.width='0'}
+document.getElementById("ocrBtn").onclick=doOCR;
+
+function num(v){const n=parseFloat(String(v).replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:null}
+function clsScore(c){return ({A1:1.0,A2:.65,B1:.25,B2:0})[String(c).toUpperCase()]??.1}
+function normLower(v,good,bad){const n=num(v);if(n===null)return .5;return Math.max(0,Math.min(1,(bad-n)/(bad-good)))}
+function scoreBoat(b){
+ const st=normLower(b.st,.10,.24), ex=normLower(b.ex,6.65,7.05), tu=normLower(b.turn,7.45,8.25), sr=normLower(b.straight,7.45,8.10);
+ const w=Math.max(0,Math.min(1,(num(b.win)??20)/60));
+ const lane=[1,.43,.30,.25,.22,.20][b.lane-1];
+ return 0.25*st+0.16*ex+0.16*tu+0.12*sr+0.16*clsScore(b.cls)+0.10*w+0.15*lane;
+}
+function randn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function simulate(){
+ const boats=state.boats, N=state.n, finish=Array.from({length:6},()=>[0,0,0]), combos={};
+ for(let r=0;r<N;r++){
+  const remaining=boats.map((b,i)=>({i,s:scoreBoat(b)+randn()*.16}));
+  remaining.sort((a,b)=>b.s-a.s); const p=remaining.slice(0,3).map(x=>x.i);
+  p.forEach((idx,pos)=>finish[idx][pos]++);
+  const key=p.map(x=>x+1).join("-");
+  combos[key]=(combos[key]||0)+1;
+ }
+ renderResults(finish,combos,N);
+}
+function pct(n,N){return (n/N*100).toFixed(1)+"%"}
+function renderResults(f,c,N){
+ document.getElementById("probTable").innerHTML="<thead><tr><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr></thead><tbody>"+f.map((x,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}号艇</td><td>${pct(x[0],N)}</td><td>${pct(x[1],N)}</td><td>${pct(x[2],N)}</td><td>${pct(x[0]+x[1]+x[2],N)}</td></tr>`).join("")+"</tbody>";
+ const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,20);
+ document.getElementById("comboTable").innerHTML="<thead><tr><th>#</th><th>三連単</th><th>回数</th><th>出現率</th></tr></thead><tbody>"+arr.map((x,i)=>`<tr><td class="rank">${i+1}</td><td class="combo">${x[0]}</td><td>${x[1]}</td><td>${pct(x[1],N)}</td></tr>`).join("")+"</tbody>";
+ document.getElementById("results").classList.add("show");document.getElementById("runStatus").textContent=`${N.toLocaleString()}回のシミュレーション完了`;
+ window.scrollTo({top:document.getElementById("results").offsetTop-10,behavior:"smooth"});
+}
+document.getElementById("runBtn").onclick=()=>{renderTable();document.getElementById("runStatus").textContent="計算中…";setTimeout(simulate,30)}
+document.getElementById("resetBtn").onclick=()=>location.reload();
 </script>
-</body>
-</html>
+</body></html>
