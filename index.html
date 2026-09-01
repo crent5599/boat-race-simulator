@@ -32,15 +32,14 @@ table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 3px;b
 <div class="steps"><div class="step"><b>①</b>出走表</div><div class="step"><b>②</b>展示タイム</div><div class="step"><b>③</b>過去10走</div></div>
 <div class="upload"><label>① 出走表スクショ</label><input id="shot1" type="file" accept="image/*"></div>
 <div class="upload"><label>② 展示・一周・まわり足・直線スクショ</label><input id="shot2" type="file" accept="image/*"></div>
-<div class="upload"><label>③ 枠番別過去10走スクショ</label><input id="shot3" type="file" accept="image/*"></div>
-<button class="wide green" onclick="readShots()">📷 3枚を読み取って自動入力</button>
+<button class="wide green" onclick="readShots()">📷 2枚を読み取って自動入力</button>
 <div class="progress" id="status">まだ読み取りしていません。</div><div class="bar"><i id="bar"></i></div>
 </div>
 
 <div class="card"><h2>レース情報</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="venue" placeholder="競艇場"><input id="race" placeholder="例：12R"></div></div>
 
 <div class="card"><h2>📝 6艇の入力内容</h2><div id="boats"></div>
-<div class="note">OCRで自動入力した後も、数値は自由に修正できます。画像の切り抜き方や文字の状態によってOCRが誤ることがあるため、実行前に一度確認してください。</div></div>
+<div class="note">OCRで自動入力した後も、数値は自由に修正できます。<b>過去10走 枠番勝率（%）だけは手入力</b>です。画像の状態によってOCRが誤ることがあるため、実行前に一度確認してください。</div></div>
 
 <div class="card"><h2>🎲 シミュレーション</h2><div class="run"><button onclick="simulate(100)">100回</button><button onclick="simulate(1000)">1000回</button><button onclick="simulate(10000)">10000回</button></div><button class="wide gray" style="margin-top:8px" onclick="resetAll()">入力・結果をリセット</button></div>
 
@@ -75,8 +74,8 @@ function sixRows(text, pattern){
  return out.slice(0,6);
 }
 async function readShots(){
- const f1=document.getElementById('shot1').files[0], f2=document.getElementById('shot2').files[0], f3=document.getElementById('shot3').files[0];
- if(!f1||!f2||!f3){alert('3枚すべて選択してください。');return}
+ const f1=document.getElementById('shot1').files[0], f2=document.getElementById('shot2').files[0];
+ if(!f1||!f2){alert('①出走表と②展示スクショの2枚を選択してください。');return}
  const st=document.getElementById('status'), bar=document.getElementById('bar');
  try{
   st.textContent='① 出走表を読み取っています…';bar.style.width='10%';
@@ -91,15 +90,8 @@ async function readShots(){
   // Typical OCR returns one row per boat; use the first four decimals per row.
   let rows2=lines2.filter(a=>a.filter(v=>v>6&&v<10).length>=4).map(a=>a.filter(v=>v>6&&v<10).slice(0,4)).slice(0,6);
   for(let i=0;i<Math.min(6,rows2.length);i++){setVal('st_'+i, getOrKeep('st_'+i)); setVal('ex_'+i,rows2[i][0]); setVal('turn_'+i,rows2[i][2]); setVal('str_'+i,rows2[i][3]);}
-  st.textContent='③ 過去10走・枠番勝率を読み取っています…';
-  const t3=await ocr(f3,'eng');bar.style.width='92%';
-  const lines3=t3.split(/\n/).map(x=>nums(x)).filter(a=>a.length>=1);
-  const wins=lines3.flat().filter(v=>v>=0&&v<=100);
-  // Prefer values that look like percentages with two decimals; remove obvious row numbers 1-6.
-  const candidates=wins.filter(v=>v>1.5);
-  for(let i=0;i<Math.min(6,candidates.length);i++)setVal('lane_'+i,candidates[i]);
   bar.style.width='100%';
-  st.textContent='✅ 読み取り完了。6艇の入力欄を確認してください。';
+  st.textContent='✅ 2枚の読み取り完了。過去10走 枠番勝率は手入力してください。';
  }catch(e){console.error(e);st.textContent='⚠️ 読み取り中にエラーが発生しました。画像を確認して再実行してください。'}
 }
 function getOrKeep(id){return parseFloat(document.getElementById(id).value)||''}
