@@ -5,177 +5,109 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b3f7a">
 <title>競艇レースシミュレーター</title>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
-:root{--navy:#0b3f7a;--blue:#1769d1;--purple:#7146d9;--bg:#eef4f8;--card:#fff;--line:#dbe5ef;--text:#14233a;--muted:#6f8095;--good:#16884a}
+:root{--navy:#0b3f7a;--blue:#1769d1;--purple:#7146d9;--bg:#eef4f8;--line:#d8e3ee;--text:#14233a;--muted:#718096}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--text)}
-header{background:linear-gradient(135deg,#082e61,#14559a);color:#fff;padding:22px 18px 20px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #0002}
-header h1{font-size:23px;margin:0 0 5px;font-weight:800}header p{margin:0;font-size:13px;opacity:.9}
-main{max-width:1050px;margin:auto;padding:14px 12px 50px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:#fff;border-radius:18px;padding:16px;box-shadow:0 4px 16px #18385c12;margin-bottom:14px;border:1px solid #e5edf5}
-.card h2{font-size:19px;margin:0 0 13px;display:flex;gap:9px;align-items:center}.num{width:29px;height:29px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;background:var(--blue);font-size:14px;font-weight:800}
-.uploads{display:grid;grid-template-columns:1fr 1fr;gap:10px}.upload{border:1.5px dashed #b7cbe0;border-radius:14px;padding:12px;background:#fbfdff}.upload strong{display:block;font-size:14px;margin-bottom:5px}.upload small{display:block;color:var(--muted);line-height:1.5;min-height:40px}
-input[type=file]{display:none}.pick{display:block;text-align:center;background:#1769d1;color:white;padding:11px;border-radius:9px;font-weight:700;cursor:pointer;margin-top:8px}.status{font-size:12px;margin-top:8px;color:var(--muted);word-break:break-all}.ok{color:var(--good);font-weight:700}
-button{border:0;border-radius:11px;padding:13px 15px;font-size:15px;font-weight:800;cursor:pointer}.primary{background:#1769d1;color:white;width:100%;margin-top:11px}.run{background:var(--purple);color:white;width:100%;font-size:17px;padding:15px}.outline{background:white;border:1px solid #afc3da;color:var(--navy)}
-.notice{background:#f1faf4;border:1px solid #b9e1c7;padding:11px;border-radius:10px;color:#23653c;font-size:13px;margin-top:10px}.warn{background:#fff8e8;border-color:#efd38c;color:#75570b}
-.inputs6{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.lane{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.laneHead{padding:7px;text-align:center;font-weight:800}.l1{background:#f8f8f8}.l2{background:#666;color:#fff}.l3{background:#ed3151;color:#fff}.l4{background:#3191d8;color:#fff}.l5{background:#f7d92d}.l6{background:#31ad2e;color:#fff}.laneBody{padding:8px}.field{margin-bottom:7px}.field label{display:block;font-size:10px;color:#6e7e91;margin-bottom:3px}.field input,.field select{width:100%;padding:8px 5px;border:1px solid #cbd8e5;border-radius:7px;font-size:14px;text-align:center;background:#fff;color:#17263c}
-.simBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.simBtns button{background:#fff;border:1px solid #afc3da;color:var(--navy)}.simBtns button.active{background:var(--purple);color:#fff;border-color:var(--purple)}
-.progress{height:9px;background:#e8edf4;border-radius:99px;overflow:hidden;margin:11px 0}.bar{height:100%;width:0;background:var(--purple);transition:.2s}.resultTable{width:100%;border-collapse:collapse;font-size:13px}.resultTable th,.resultTable td{border:1px solid #dbe3ec;padding:8px;text-align:center}.resultTable th{background:#f3f7fb}.combo{font-weight:800;letter-spacing:1px}.rank{font-size:11px;color:#728198}.empty{padding:18px;text-align:center;color:#718096}
-.results{display:none}.results.show{display:block}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-footer{font-size:11px;color:#728198;text-align:center;padding:8px 0 20px}
-@media(max-width:760px){header{position:relative}.grid,.two{display:block}.uploads{grid-template-columns:1fr}.inputs6{grid-template-columns:repeat(2,1fr)}main{padding:10px}.card{padding:13px;border-radius:15px}.card h2{font-size:18px}.laneBody{padding:9px}.field input,.field select{font-size:15px;padding:10px}.simBtns button{padding:12px 5px}}
-@media(min-width:761px){.full{grid-column:1/-1}}
+header{background:linear-gradient(135deg,#082e61,#14559a);color:#fff;padding:20px 16px;box-shadow:0 3px 12px #0002}header h1{font-size:23px;margin:0 0 5px;font-weight:800}header p{margin:0;font-size:13px;opacity:.92}
+main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;border-radius:17px;padding:15px;margin-bottom:13px;box-shadow:0 4px 16px #18385c12;border:1px solid #e5edf5}.card h2{font-size:19px;margin:0 0 12px;display:flex;gap:9px;align-items:center}.num{width:29px;height:29px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;background:var(--blue);font-size:14px;font-weight:800;flex:none}
+.race{display:grid;grid-template-columns:1fr 1fr;gap:10px}.weatherGrid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:12px 10px;border:1px solid #c5d6e7;border-radius:10px;font-size:16px;background:#fff;color:var(--text)}
+.boats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.boat{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.head{padding:8px;text-align:center;font-weight:900}.l1{background:#f7f7f7}.l2{background:#666;color:#fff}.l3{background:#ed3151;color:#fff}.l4{background:#3191d8;color:#fff}.l5{background:#f7d92d}.l6{background:#31ad2e;color:#fff}.body{padding:9px}.body .field{margin-bottom:8px}.body .field:last-child{margin-bottom:0}.body label{font-size:11px}.body input,.body select{font-size:16px;text-align:center;padding:10px 6px}
+.hint{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 11px}.sub{font-weight:800;font-size:14px;margin:13px 0 8px;color:var(--navy)}.past{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.past .field label{text-align:center}.notice{background:#f4f8fc;border:1px solid #d6e4f0;padding:10px;border-radius:10px;font-size:12px;color:#63758a;margin-top:10px}
+.simBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.simBtns button{border:1px solid #afc3da;background:#fff;color:var(--navy);border-radius:10px;padding:12px 5px;font-size:15px;font-weight:800}.simBtns button.active{background:var(--purple);border-color:var(--purple);color:#fff}.run{width:100%;border:0;border-radius:11px;background:var(--purple);color:#fff;font-size:17px;font-weight:900;padding:15px;margin-top:10px}.reset{width:100%;border:1px solid #afc3da;border-radius:10px;background:#fff;color:var(--navy);font-weight:800;padding:12px;margin-top:10px}
+.results{display:none}.results.show{display:block}.resultTable{width:100%;border-collapse:collapse;font-size:13px}.resultTable th,.resultTable td{border:1px solid #dbe3ec;padding:8px;text-align:center}.resultTable th{background:#f3f7fb}.combo{font-weight:900;letter-spacing:1px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}footer{text-align:center;color:#718096;font-size:11px;padding:5px}
+@media(max-width:700px){.race{grid-template-columns:1fr}.weatherGrid{grid-template-columns:1fr}.boats{grid-template-columns:1fr 1fr}.two{display:block}.two>div{margin-bottom:14px}.card{padding:13px}.boats{gap:8px}.body input,.body select{font-size:16px}}
+@media(max-width:420px){.boats{grid-template-columns:1fr}.simBtns button{font-size:14px}}
 </style>
 </head>
 <body>
-<header><h1>🚤 競艇レースシミュレーター</h1><p>スクショから読み取り → データ確認 → シミュレーション</p></header>
+<header><h1>🚤 競艇レースシミュレーター</h1><p>6艇のデータを手入力して、100〜10,000回シミュレーション</p></header>
 <main>
-<div class="grid">
 <section class="card">
-<h2><span class="num">1</span>スクショを読み取る</h2>
-<div class="uploads">
-<div class="upload"><strong>① 出走表スクショ</strong><small>級別・平均STを読み取ります。写真ライブラリから選択できます。</small><label class="pick" for="shot1">写真を選択</label><input id="shot1" type="file" accept="image/*"><div id="status1" class="status">未選択</div></div>
-<div class="upload"><strong>② 展示データスクショ</strong><small>展示・まわり足・直線を読み取ります。</small><label class="pick" for="shot2">写真を選択</label><input id="shot2" type="file" accept="image/*"><div id="status2" class="status">未選択</div></div>
+<h2><span class="num">1</span>レース情報</h2>
+<div class="race">
+<div class="field"><label>競艇場</label><input id="venue" type="text" placeholder="例：芦屋"></div>
+<div class="field"><label>レース</label><input id="raceNo" type="text" inputmode="numeric" placeholder="例：12R"></div>
 </div>
-<button class="primary" id="ocrBtn">✨ 2枚の画像を読み取る</button>
-<div id="ocrStatus" class="notice" style="display:none"></div><div class="progress" id="progressWrap" style="display:none"><div class="bar" id="bar"></div></div>
 </section>
 
 <section class="card">
-<h2><span class="num" style="background:#f09a19">2</span>過去10走 枠番別勝率を入力</h2>
-<p style="font-size:13px;color:#718096;margin-top:-4px">ここだけは手入力です。各艇の「枠番別勝率」を%で入力してください。</p>
-<div class="inputs6" id="winInputs"></div>
-<div class="notice">例：32.5 → 32.5%　※勝率はシミュレーションの補正材料として使用します。</div>
-</section>
-
-<section class="card full">
-<h2><span class="num" style="background:#22a05a">3</span>6艇データ確認・修正</h2>
-<p style="font-size:13px;color:#718096;margin-top:-4px">OCR結果を必ず確認してください。空欄・誤認識はここで修正できます。</p>
-<div style="overflow-x:auto"><table class="resultTable" id="dataTable"></table></div>
+<h2><span class="num">2</span>6艇の情報入力</h2>
+<p class="hint">スクショ入力はありません。平均ST・展示・まわり足・直線は数字を直接入力。級別は選択式です。</p>
+<div class="boats" id="boats"></div>
 </section>
 
 <section class="card">
-<h2><span class="num" style="background:#7146d9">4</span>シミュレーション実行</h2>
-<div class="simBtns">
-<button data-n="100">100回</button><button class="active" data-n="1000">1000回</button><button data-n="10000">10000回</button>
+<h2><span class="num" style="background:#f09a19">3</span>過去10走の成績</h2>
+<p class="hint">各艇について、直近10走の「1着数・2着数・3着数」を入力してください。残りは4着以下として扱います。</p>
+<div class="boats" id="past"></div>
+<div class="notice">例：1着3・2着2・3着1 → 10走中、1〜3着が6回。シミュレーションでは着順傾向の補正に使用します。</div>
+</section>
+
+<section class="card">
+<h2><span class="num" style="background:#168b65">4</span>風・波の条件</h2>
+<p class="hint">当日のコンディションを入力します。風向・風速・波高をシミュレーションに反映します。</p>
+<div class="weatherGrid">
+<div class="field"><label>風向</label><select id="windDir"><option value="none">なし・微風</option><option value="tail">追い風</option><option value="head">向かい風</option><option value="right">右横風（スタンド側から）</option><option value="left">左横風（掲示板側から）</option></select></div>
+<div class="field"><label>風速（m/s）</label><input id="windSpeed" type="number" inputmode="decimal" step="0.1" min="0" max="20" placeholder="例：3.0"></div>
+<div class="field"><label>波高（cm）</label><input id="waveHeight" type="number" inputmode="numeric" step="1" min="0" max="100" placeholder="例：3"></div>
 </div>
-<button class="run" id="runBtn">▶ シミュレーション開始</button>
-<div id="runStatus" class="status"></div>
+<div class="notice">風が強いほど展開のブレを大きくし、風向・波高に応じて各コースの有利不利を補正します。実際の競艇場ごとの水面特性までは自動取得しません。</div>
 </section>
 
 <section class="card">
-<h2>⚙️ シミュレーションについて</h2>
+<h2><span class="num" style="background:#7146d9">5</span>シミュレーション</h2>
+<div class="simBtns"><button data-n="100">100回</button><button class="active" data-n="1000">1000回</button><button data-n="10000">10000回</button></div>
+<button class="run" id="run">▶ シミュレーション開始</button>
+<div id="status" style="font-size:12px;color:#718096;margin-top:8px"></div>
+</section>
+
+<section class="card">
+<h2>⚙️ シミュレーションの考え方</h2>
 <ul style="margin:0;padding-left:20px;color:#66798e;font-size:13px;line-height:1.8">
-<li>平均ST・展示タイム・まわり足・直線タイムを数値化</li>
-<li>選手クラス・枠番別勝率・コースの優位性を加味</li>
-<li>各試行でランダムな展開差を加えて順位を決定</li>
-<li>実際のレース結果を保証するものではありません</li>
+<li>平均ST：数値が小さいほど有利</li><li>展示・まわり足・直線：数値が小さいほど有利</li><li>級別：A1 ＞ A2 ＞ B1 ＞ B2</li><li>過去10走：1〜3着の実績を着順傾向として反映</li><li>1号艇にはコース優位性を加味</li><li>風向・風速・波高でコース補正とランダムな展開差を調整</li><li>各回にランダムな展開差を加えて順位を決定</li>
 </ul>
+<div class="notice">※このシミュレーションは参考値です。実際のレース結果や的中を保証するものではありません。</div>
 </section>
-</div>
 
 <section class="card results" id="results">
-<h2><span class="num" style="background:#7146d9">5</span>シミュレーション結果</h2>
-<div class="two">
-<div><h3>着順別確率</h3><table class="resultTable" id="probTable"></table></div>
-<div><h3>三連単 出現ランキング</h3><table class="resultTable" id="comboTable"></table></div>
-</div>
-<div style="margin-top:12px"><button class="outline" id="resetBtn">入力・結果をリセット</button></div>
+<h2><span class="num" style="background:#7146d9">6</span>シミュレーション結果</h2>
+<div class="two"><div><h3>着順別確率</h3><table class="resultTable" id="prob"></table></div><div><h3>三連単 出現ランキング</h3><table class="resultTable" id="combos"></table></div></div>
+<button class="reset" id="reset">入力・結果をリセット</button>
 </section>
-<footer>※ OCRの読み取り精度には限界があります。シミュレーション前に入力値を確認してください。</footer>
+<footer>競艇レースシミュレーター</footer>
 </main>
-
 <script>
-const state={n:1000,shots:[null,null],boats:Array.from({length:6},(_,i)=>({lane:i+1,cls:"",st:"",ex:"",turn:"",straight:"",win:""}))};
-const colors=["l1","l2","l3","l4","l5","l6"];
-
-function renderWinInputs(){
- const el=document.getElementById("winInputs"); el.innerHTML="";
- state.boats.forEach((b,i)=>{el.innerHTML+=`<div class="lane"><div class="laneHead ${colors[i]}">${i+1}号艇</div><div class="laneBody"><input aria-label="${i+1}号艇 枠番勝率" inputmode="decimal" type="number" min="0" max="100" step="0.1" placeholder="勝率 %" data-win="${i}" value="${b.win}"></div></div>`});
- el.querySelectorAll("[data-win]").forEach(x=>x.oninput=e=>state.boats[+e.target.dataset.win].win=e.target.value);
-}
-function renderTable(){
- const t=document.getElementById("dataTable");
- t.innerHTML=`<thead><tr><th>艇</th><th>級別</th><th>平均ST<br>小さいほど有利</th><th>展示</th><th>まわり足</th><th>直線</th><th>過去10走<br>勝率%</th></tr></thead><tbody>`+
- state.boats.map((b,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}</td>
-<td><input class="cell" data-k="cls" data-i="${i}" value="${b.cls}" placeholder="A1"></td>
-<td><input class="cell" data-k="st" data-i="${i}" inputmode="decimal" value="${b.st}" placeholder=".16"></td>
-<td><input class="cell" data-k="ex" data-i="${i}" inputmode="decimal" value="${b.ex}" placeholder="6.80"></td>
-<td><input class="cell" data-k="turn" data-i="${i}" inputmode="decimal" value="${b.turn}" placeholder="7.94"></td>
-<td><input class="cell" data-k="straight" data-i="${i}" inputmode="decimal" value="${b.straight}" placeholder="7.75"></td>
-<td><input class="cell" data-k="win" data-i="${i}" inputmode="decimal" value="${b.win}" placeholder="32.5"></td></tr>`).join("")+"</tbody>";
- t.querySelectorAll(".cell").forEach(x=>x.oninput=e=>state.boats[+e.target.dataset.i][e.target.dataset.k]=e.target.value);
-}
-renderWinInputs();renderTable();
-
-document.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-n]").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.n=+b.dataset.n});
-
-function readFile(id,statusId,idx){
- document.getElementById(id).onchange=e=>{state.shots[idx]=e.target.files[0]||null;const s=document.getElementById(statusId);s.textContent=state.shots[idx]?"✓ "+state.shots[idx].name:"未選択";s.className="status ok"};
-}
-readFile("shot1","status1",0);readFile("shot2","status2",1);
-
-function loadImage(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);res(im)};im.onerror=rej;im.src=u})}
-async function cellOCR(im,x1,y1,x2,y2,whitelist){
- const c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*(x2-x1)));c.height=Math.max(1,Math.round(im.height*(y2-y1)));
- const ctx=c.getContext("2d");ctx.imageSmoothingEnabled=false;ctx.drawImage(im,im.width*x1,im.height*y1,im.width*(x2-x1),im.height*(y2-y1),0,0,c.width,c.height);
- const r=await Tesseract.recognize(c,"eng",{logger:m=>{if(m.status==="recognizing text"){}},tessedit_pageseg_mode:"7",tessedit_char_whitelist:whitelist});
- return r.data.text.trim().replace(/,/g,"");
-}
-async function doOCR(){
- if(!state.shots[0]||!state.shots[1]){alert("①出走表と②展示データの2枚を選択してください。");return}
- const st=document.getElementById("ocrStatus"),bar=document.getElementById("bar"),pw=document.getElementById("progressWrap");st.style.display="block";pw.style.display="block";
- st.textContent="OCRエンジンを準備しています…";bar.style.width="5%";
- try{
-  const [im1,im2]=await Promise.all([loadImage(state.shots[0]),loadImage(state.shots[1])]);
-  // These normalized regions match the screenshot layout supplied by the user.
-  for(let i=0;i<6;i++){
-   const y1=.323+i*.0757, y2=y1+.058;
-   state.boats[i].cls=(await cellOCR(im1,.135,y1,.215,y2,"AB12"))||state.boats[i].cls;
-   state.boats[i].st=(await cellOCR(im1,.595,y1,.68,y2,"0123456789."))||state.boats[i].st;
-   bar.style.width=(10+i*10)+"%";
-  }
-  for(let i=0;i<6;i++){
-   const y1=.323+i*.0757, y2=y1+.058;
-   state.boats[i].ex=(await cellOCR(im2,.525,y1,.685,y2,"0123456789."))||state.boats[i].ex;
-   state.boats[i].turn=(await cellOCR(im2,.685,y1,.84,y2,"0123456789."))||state.boats[i].turn;
-   state.boats[i].straight=(await cellOCR(im2,.84,y1,.995,y2,"0123456789."))||state.boats[i].straight;
-   bar.style.width=(70+i*5)+"%";
-  }
-  renderTable();bar.style.width="100%";st.innerHTML="✅ 読み取り完了。<br>下の「6艇データ確認・修正」で数値を確認してください。";
- }catch(e){console.error(e);st.innerHTML="⚠️ OCRでエラーが発生しました。画像を確認するか、下の表へ手入力してください。";bar.style.width="100%"}
-}
-document.getElementById("ocrBtn").onclick=doOCR;
-
-function num(v){const n=parseFloat(String(v).replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:null}
-function clsScore(c){return ({A1:1.0,A2:.65,B1:.25,B2:0})[String(c).toUpperCase()]??.1}
-function normLower(v,good,bad){const n=num(v);if(n===null)return .5;return Math.max(0,Math.min(1,(bad-n)/(bad-good)))}
-function scoreBoat(b){
- const st=normLower(b.st,.10,.24), ex=normLower(b.ex,6.65,7.05), tu=normLower(b.turn,7.45,8.25), sr=normLower(b.straight,7.45,8.10);
- const w=Math.max(0,Math.min(1,(num(b.win)??20)/60));
- const lane=[1,.43,.30,.25,.22,.20][b.lane-1];
- return 0.25*st+0.16*ex+0.16*tu+0.12*sr+0.16*clsScore(b.cls)+0.10*w+0.15*lane;
-}
+const state={n:1000,weather:{dir:'none',speed:'',wave:''},boats:Array.from({length:6},(_,i)=>({lane:i+1,cls:'B1',st:'',ex:'',turn:'',straight:'',first:0,second:0,third:0}))};
+const colors=['l1','l2','l3','l4','l5','l6'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function boatCard(b,i){return `<div class="boat"><div class="head ${colors[i]}">${i+1}号艇</div><div class="body">
+<div class="field"><label>級別</label><select data-i="${i}" data-k="cls"><option>A1</option><option>A2</option><option>B1</option><option>B2</option></select></div>
+<div class="field"><label>平均ST</label><input data-i="${i}" data-k="st" type="number" inputmode="decimal" step="0.01" min="0" max="1" placeholder="0.16"></div>
+<div class="field"><label>展示タイム</label><input data-i="${i}" data-k="ex" type="number" inputmode="decimal" step="0.01" min="0" placeholder="6.80"></div>
+<div class="field"><label>まわり足</label><input data-i="${i}" data-k="turn" type="number" inputmode="decimal" step="0.01" min="0" placeholder="7.90"></div>
+<div class="field"><label>直線タイム</label><input data-i="${i}" data-k="straight" type="number" inputmode="decimal" step="0.01" min="0" placeholder="7.75"></div>
+</div></div>`}
+function pastCard(b,i){return `<div class="boat"><div class="head ${colors[i]}">${i+1}号艇</div><div class="body"><div class="past">
+<div class="field"><label>1着数</label><input data-i="${i}" data-k="first" type="number" inputmode="numeric" min="0" max="10" step="1" placeholder="0"></div>
+<div class="field"><label>2着数</label><input data-i="${i}" data-k="second" type="number" inputmode="numeric" min="0" max="10" step="1" placeholder="0"></div>
+<div class="field"><label>3着数</label><input data-i="${i}" data-k="third" type="number" inputmode="numeric" min="0" max="10" step="1" placeholder="0"></div>
+</div></div></div>`}
+function render(){document.getElementById('boats').innerHTML=state.boats.map(boatCard).join('');document.getElementById('past').innerHTML=state.boats.map(pastCard).join('');
+ document.querySelectorAll('[data-k]').forEach(el=>{const b=state.boats[+el.dataset.i];el.value=b[el.dataset.k];el.oninput=()=>{b[el.dataset.k]=el.value};el.onchange=()=>{b[el.dataset.k]=el.value}})}
+render();
+['windDir','windSpeed','waveHeight'].forEach(id=>{const el=document.getElementById(id);const k=id==='windDir'?'dir':id==='windSpeed'?'speed':'wave';el.oninput=el.onchange=()=>state.weather[k]=el.value});
+document.querySelectorAll('[data-n]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-n]').forEach(x=>x.classList.remove('active'));btn.classList.add('active');state.n=+btn.dataset.n});
+function num(v,d=0){const n=parseFloat(v);return Number.isFinite(n)?n:d}
+function cls(c){return ({A1:1,A2:.72,B1:.42,B2:.18})[String(c).toUpperCase()]??.42}
+function pastFactor(b){const a=num(b.first),c=num(b.second),d=num(b.third);const top=a+c+d;return .55*(a/10)+.28*(c/10)+.17*(d/10)+.10*(top/10)}
+function lower(v,good,bad){const n=num(v);if(!n)return .5;return Math.max(0,Math.min(1,(bad-n)/(bad-good)))}
+function score(b){const st=lower(b.st,.10,.24),ex=lower(b.ex,6.65,7.05),tu=lower(b.turn,7.45,8.25),sr=lower(b.straight,7.45,8.10);const lane=[1,.46,.32,.27,.23,.20][b.lane-1];let w=1;const sp=num(state.weather.speed),wave=num(state.weather.wave);if(state.weather.dir==='tail')w += [0.018,0.010,0.006,0.003,0,0][b.lane-1]*sp; if(state.weather.dir==='head')w += [-0.004,0.010,0.014,0.016,0.012,0.010][b.lane-1]*sp; if(state.weather.dir==='right')w += [0.003,0.006,0.010,0.012,0.008,0.004][b.lane-1]*sp; if(state.weather.dir==='left')w += [0.003,0.008,0.012,0.010,0.006,0.003][b.lane-1]*sp; w += (wave/10)*([0.004,0.006,0.008,0.008,0.006,0.004][b.lane-1]); return (.24*st+.17*ex+.15*tu+.12*sr+.15*cls(b.cls)+.12*pastFactor(b)+.05*lane)*w}
 function randn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
-function simulate(){
- const boats=state.boats, N=state.n, finish=Array.from({length:6},()=>[0,0,0]), combos={};
- for(let r=0;r<N;r++){
-  const remaining=boats.map((b,i)=>({i,s:scoreBoat(b)+randn()*.16}));
-  remaining.sort((a,b)=>b.s-a.s); const p=remaining.slice(0,3).map(x=>x.i);
-  p.forEach((idx,pos)=>finish[idx][pos]++);
-  const key=p.map(x=>x+1).join("-");
-  combos[key]=(combos[key]||0)+1;
- }
- renderResults(finish,combos,N);
-}
-function pct(n,N){return (n/N*100).toFixed(1)+"%"}
-function renderResults(f,c,N){
- document.getElementById("probTable").innerHTML="<thead><tr><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr></thead><tbody>"+f.map((x,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}号艇</td><td>${pct(x[0],N)}</td><td>${pct(x[1],N)}</td><td>${pct(x[2],N)}</td><td>${pct(x[0]+x[1]+x[2],N)}</td></tr>`).join("")+"</tbody>";
- const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,20);
- document.getElementById("comboTable").innerHTML="<thead><tr><th>#</th><th>三連単</th><th>回数</th><th>出現率</th></tr></thead><tbody>"+arr.map((x,i)=>`<tr><td class="rank">${i+1}</td><td class="combo">${x[0]}</td><td>${x[1]}</td><td>${pct(x[1],N)}</td></tr>`).join("")+"</tbody>";
- document.getElementById("results").classList.add("show");document.getElementById("runStatus").textContent=`${N.toLocaleString()}回のシミュレーション完了`;
- window.scrollTo({top:document.getElementById("results").offsetTop-10,behavior:"smooth"});
-}
-document.getElementById("runBtn").onclick=()=>{renderTable();document.getElementById("runStatus").textContent="計算中…";setTimeout(simulate,30)}
-document.getElementById("resetBtn").onclick=()=>location.reload();
+function simulate(){const N=state.n,f=Array.from({length:6},()=>[0,0,0]),comb={};for(let r=0;r<N;r++){const wind=num(state.weather.speed), wave=num(state.weather.wave); const noise=.17 + Math.min(.18,wind*.012 + wave*.006); const arr=state.boats.map((b,i)=>({i,s:score(b)+randn()*noise}));arr.sort((a,b)=>b.s-a.s);const p=arr.slice(0,3).map(x=>x.i);p.forEach((x,pos)=>f[x][pos]++);const k=p.map(x=>x+1).join('-');comb[k]=(comb[k]||0)+1}renderResult(f,comb,N)}
+function pct(n,N){return (n/N*100).toFixed(1)+'%'}
+function renderResult(f,c,N){document.getElementById('prob').innerHTML='<thead><tr><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr></thead><tbody>'+f.map((x,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}号艇</td><td>${pct(x[0],N)}</td><td>${pct(x[1],N)}</td><td>${pct(x[2],N)}</td><td>${pct(x[0]+x[1]+x[2],N)}</td></tr>`).join('')+'</tbody>';
+const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,20);document.getElementById('combos').innerHTML='<thead><tr><th>#</th><th>三連単</th><th>回数</th><th>出現率</th></tr></thead><tbody>'+arr.map((x,i)=>`<tr><td>${i+1}</td><td class="combo">${x[0]}</td><td>${x[1]}</td><td>${pct(x[1],N)}</td></tr>`).join('')+'</tbody>';
+document.getElementById('results').classList.add('show');document.getElementById('status').textContent=N.toLocaleString()+'回のシミュレーション完了';setTimeout(()=>document.getElementById('results').scrollIntoView({behavior:'smooth'}),50)}
+document.getElementById('run').onclick=()=>{render();document.getElementById('status').textContent='計算中…';setTimeout(simulate,30)};document.getElementById('reset').onclick=()=>location.reload();
 </script>
 </body></html>
