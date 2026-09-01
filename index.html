@@ -11,7 +11,7 @@
 header{background:linear-gradient(135deg,#082e61,#14559a);color:#fff;padding:20px 16px;box-shadow:0 3px 12px #0002}header h1{font-size:23px;margin:0 0 5px;font-weight:800}header p{margin:0;font-size:13px;opacity:.92}
 main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;border-radius:17px;padding:15px;margin-bottom:13px;box-shadow:0 4px 16px #18385c12;border:1px solid #e5edf5}.card h2{font-size:19px;margin:0 0 12px;display:flex;gap:9px;align-items:center}.num{width:29px;height:29px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;background:var(--blue);font-size:14px;font-weight:800;flex:none}
 .race{display:grid;grid-template-columns:1fr 1fr;gap:10px}.weatherGrid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:12px 10px;border:1px solid #c5d6e7;border-radius:10px;font-size:16px;background:#fff;color:var(--text)}
-.boats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.boat{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.head{padding:8px;text-align:center;font-weight:900}.l1{background:#f7f7f7}.l2{background:#666;color:#fff}.l3{background:#ed3151;color:#fff}.l4{background:#3191d8;color:#fff}.l5{background:#f7d92d}.l6{background:#31ad2e;color:#fff}.body{padding:9px}.body .field{margin-bottom:8px}.body .field:last-child{margin-bottom:0}.body label{font-size:11px}.body input,.body select{font-size:16px;text-align:center;padding:10px 6px}
+.boats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.boat{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.head{padding:8px;text-align:center;font-weight:900}.l1{background:#f7f7f7}.l2{background:#666;color:#fff}.l3{background:#ed3151;color:#fff}.l4{background:#3191d8;color:#fff}.l5{background:#f7d92d}.l6{background:#31ad2e;color:#fff}.body{padding:9px}.body .field{margin-bottom:8px}.body .field:last-child{margin-bottom:0}.body label{font-size:11px}.body input,.body select{font-size:16px;text-align:center;padding:11px 6px;min-height:44px}
 .hint{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 11px}.sub{font-weight:800;font-size:14px;margin:13px 0 8px;color:var(--navy)}.past{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.past .field label{text-align:center}.notice{background:#f4f8fc;border:1px solid #d6e4f0;padding:10px;border-radius:10px;font-size:12px;color:#63758a;margin-top:10px}
 .simBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.simBtns button{border:1px solid #afc3da;background:#fff;color:var(--navy);border-radius:10px;padding:12px 5px;font-size:15px;font-weight:800}.simBtns button.active{background:var(--purple);border-color:var(--purple);color:#fff}.run{width:100%;border:0;border-radius:11px;background:var(--purple);color:#fff;font-size:17px;font-weight:900;padding:15px;margin-top:10px}.reset{width:100%;border:1px solid #afc3da;border-radius:10px;background:#fff;color:var(--navy);font-weight:800;padding:12px;margin-top:10px}
 .results{display:none}.results.show{display:block}.resultTable{width:100%;border-collapse:collapse;font-size:13px}.resultTable th,.resultTable td{border:1px solid #dbe3ec;padding:8px;text-align:center}.resultTable th{background:#f3f7fb}.combo{font-weight:900;letter-spacing:1px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}footer{text-align:center;color:#718096;font-size:11px;padding:5px}
@@ -32,7 +32,7 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 
 <section class="card">
 <h2><span class="num">2</span>6艇の情報入力</h2>
-<p class="hint">スクショ入力はありません。平均ST・展示・まわり足・直線は数字を直接入力。級別は選択式です。</p>
+<p class="hint">すべてタップ選択式です。平均STは0.07〜0.20を0.01刻み、展示・まわり足・直線は5.50〜8.50を0.05刻みで選択できます。</p>
 <div class="boats" id="boats"></div>
 </section>
 
@@ -64,7 +64,7 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 <section class="card">
 <h2>⚙️ シミュレーションの考え方</h2>
 <ul style="margin:0;padding-left:20px;color:#66798e;font-size:13px;line-height:1.8">
-<li>平均ST：数値が小さいほど有利</li><li>展示・まわり足・直線：数値が小さいほど有利</li><li>級別：A1 ＞ A2 ＞ B1 ＞ B2</li><li>過去10走：1〜3着の実績を着順傾向として反映</li><li>1号艇にはコース優位性を加味</li><li>風向・風速・波高でコース補正とランダムな展開差を調整</li><li>各回にランダムな展開差を加えて順位を決定</li>
+<li>平均ST：0.07〜0.20から0.01刻みで選択。数値が小さいほど有利</li><li>展示・まわり足・直線：5.50〜8.50から0.05刻みで選択。数値が小さいほど有利</li><li>級別：A1 ＞ A2 ＞ B1 ＞ B2</li><li>過去10走：1着・2着・3着を0〜10から選択し、着順傾向として反映</li><li>1号艇にはコース優位性を加味</li><li>風向・風速・波高でコース補正とランダムな展開差を調整</li><li>各回にランダムな展開差を加えて順位を決定</li>
 </ul>
 <div class="notice">※このシミュレーションは参考値です。実際のレース結果や的中を保証するものではありません。</div>
 </section>
@@ -80,18 +80,36 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 const state={n:1000,weather:{dir:'none',speed:'',wave:''},boats:Array.from({length:6},(_,i)=>({lane:i+1,cls:'B1',st:'',ex:'',turn:'',straight:'',first:0,second:0,third:0}))};
 const colors=['l1','l2','l3','l4','l5','l6'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function stOptions(v){
+ let s='<option value="">選択</option>';
+ for(let n=7;n<=20;n++){let x=(n/100).toFixed(2);s+=`<option value="${x}" ${String(v)===x?'selected':''}>${x}</option>`}
+ return s;
+}
+function timeOptions(v){
+ let s='<option value="">選択</option>';
+ for(let n=550;n<=850;n+=5){let x=(n/100).toFixed(2);s+=`<option value="${x}" ${String(v)===x?'selected':''}>${x}</option>`}
+ return s;
+}
+function countOptions(v){
+ let s='<option value="">選択</option>';
+ for(let n=0;n<=10;n++){s+=`<option value="${n}" ${String(v)===String(n)?'selected':''}>${n}</option>`}
+ return s;
+}
+function classOptions(v){
+ return ['','A1','A2','B1','B2'].map(x=>`<option value="${x}" ${v===x?'selected':''}>${x||'選択'}</option>`).join('');
+}
 function boatCard(b,i){return `<div class="boat"><div class="head ${colors[i]}">${i+1}号艇</div><div class="body">
-<div class="field"><label>級別</label><select data-i="${i}" data-k="cls"><option>A1</option><option>A2</option><option>B1</option><option>B2</option></select></div>
-<div class="field"><label>平均ST</label><input data-i="${i}" data-k="st" type="number" inputmode="decimal" step="0.01" min="0" max="1" placeholder="0.16"></div>
-<div class="field"><label>展示タイム</label><input data-i="${i}" data-k="ex" type="number" inputmode="decimal" step="0.01" min="0" placeholder="6.80"></div>
-<div class="field"><label>まわり足</label><input data-i="${i}" data-k="turn" type="number" inputmode="decimal" step="0.01" min="0" placeholder="7.90"></div>
-<div class="field"><label>直線タイム</label><input data-i="${i}" data-k="straight" type="number" inputmode="decimal" step="0.01" min="0" placeholder="7.75"></div>
-</div></div>`}
+<div class="field"><label>級別</label><select data-i="${i}" data-k="cls">${classOptions(b.cls)}</select></div>
+<div class="field"><label>平均ST（0.07〜0.20）</label><select data-i="${i}" data-k="st">${stOptions(b.st)}</select></div>
+<div class="field"><label>展示タイム</label><select data-i="${i}" data-k="ex">${timeOptions(b.ex)}</select></div>
+<div class="field"><label>まわり足</label><select data-i="${i}" data-k="turn">${timeOptions(b.turn)}</select></div>
+<div class="field"><label>直線タイム</label><select data-i="${i}" data-k="straight">${timeOptions(b.straight)}</select></div>
+</div></div>}
 function pastCard(b,i){return `<div class="boat"><div class="head ${colors[i]}">${i+1}号艇</div><div class="body"><div class="past">
-<div class="field"><label>1着数</label><input data-i="${i}" data-k="first" type="number" inputmode="numeric" min="0" max="10" step="1" placeholder="0"></div>
-<div class="field"><label>2着数</label><input data-i="${i}" data-k="second" type="number" inputmode="numeric" min="0" max="10" step="1" placeholder="0"></div>
-<div class="field"><label>3着数</label><input data-i="${i}" data-k="third" type="number" inputmode="numeric" min="0" max="10" step="1" placeholder="0"></div>
-</div></div></div>`}
+<div class="field"><label>1着数</label><select data-i="${i}" data-k="first">${countOptions(b.first)}</select></div>
+<div class="field"><label>2着数</label><select data-i="${i}" data-k="second">${countOptions(b.second)}</select></div>
+<div class="field"><label>3着数</label><select data-i="${i}" data-k="third">${countOptions(b.third)}</select></div>
+</div></div></div>}
 function render(){document.getElementById('boats').innerHTML=state.boats.map(boatCard).join('');document.getElementById('past').innerHTML=state.boats.map(pastCard).join('');
  document.querySelectorAll('[data-k]').forEach(el=>{const b=state.boats[+el.dataset.i];el.value=b[el.dataset.k];el.oninput=()=>{b[el.dataset.k]=el.value};el.onchange=()=>{b[el.dataset.k]=el.value}})}
 render();
