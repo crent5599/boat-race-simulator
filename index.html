@@ -38,6 +38,24 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 }
 
 
+/* --- 展開パターン / レース可視化 --- */
+.tacticGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tacticItem{border:1px solid var(--line);border-radius:13px;padding:10px;background:#fbfdff}
+.tacticHead{display:flex;align-items:center;gap:8px;font-weight:900;margin-bottom:7px}
+.tacticBadge{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:900;flex:none}
+.tacticItem select{width:100%;min-height:46px;font-size:16px;padding:10px;border:1px solid #afc3da;border-radius:10px;background:#fff}
+.locked{background:#f1f5f9!important;color:#475569!important;font-weight:800}
+.visualWrap{border-radius:15px;overflow:hidden;border:1px solid #c5d6e7;background:#a9def2}
+#raceSvg{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#a9def2}
+.visualLegend{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.legendItem{font-size:12px;font-weight:800;background:#f4f8fc;border:1px solid #d6e4f0;border-radius:999px;padding:5px 8px}
+.phaseBar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
+.phase{padding:8px 4px;text-align:center;border:1px solid #d6e4f0;border-radius:9px;font-size:11px;font-weight:800;background:#fff;color:#718096}
+.phase.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.vResult{margin-top:10px;padding:10px;border-radius:10px;background:#f4f8fc;border:1px solid #d6e4f0;font-weight:800}
+.boatDot{transition:transform .15s linear}
+@media(max-width:700px){.tacticGrid{grid-template-columns:1fr}.phaseBar{grid-template-columns:repeat(5,1fr)}.phase{font-size:10px;padding:7px 2px}}
+
 
 .mainTacticGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mainTacticGrid select{width:100%;min-height:48px;font-size:16px;padding:10px 12px;border:1px solid #afc3da;border-radius:10px;background:#fff;color:var(--text)}
@@ -90,18 +108,39 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
     <option value="escape" selected>逃げ</option><option value="inside">差し</option><option value="makuri">まくり</option><option value="makurisashi">まくり差し</option>
   </select></div>
 </div>
-<div class="notice">選択した1艇・1戦法をメイン展開として、順位計算に反映します。他の艇は通常の能力値・ST・タイム・風波条件を中心にシミュレーションします。</div>
+<div class="notice">選択した1艇・1戦法をメイン展開として、順位計算とレース可視化に反映します。他の艇は通常の能力値・ST・タイム・風波条件を中心にシミュレーションします。</div>
 </section>
 
+<section class="card" id="visualCard">
+<h2><span class="num" style="background:#0b8f6a">6</span>レース展開の可視化</h2>
+<p class="hint">シミュレーション結果をもとに、スタートから3周目ゴールまでの展開をアニメーション表示します。</p>
+<div class="visualWrap">
+<svg id="raceSvg" viewBox="0 0 960 540" role="img" aria-label="ボートレース展開シミュレーション">
+  <defs>
+    <linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9e8f7"/><stop offset="1" stop-color="#7cc9e8"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".22"/></filter>
+  </defs>
+  <rect x="0" y="0" width="960" height="540" fill="url(#water)"/>
+  <path d="M185 95 H775 Q870 95 870 190 V350 Q870 445 775 445 H185 Q90 445 90 350 V190 Q90 95 185 95Z" fill="none" stroke="#168de2" stroke-width="5"/>
+  <circle cx="285" cy="270" r="42" fill="#f4f4f4" stroke="#f08b55" stroke-width="3"/><circle cx="675" cy="270" r="42" fill="#f4f4f4" stroke="#f08b55" stroke-width="3"/>
+  <path d="M480 385 V500" stroke="#fff" stroke-width="12"/><rect x="46" y="220" width="54" height="125" rx="4" fill="#e8e8e8" stroke="#777" stroke-width="2"/><text x="73" y="285" text-anchor="middle" font-size="22" font-weight="800" fill="#444" transform="rotate(-90 73 285)">スタート</text>
+  <text x="480" y="45" text-anchor="middle" font-size="22" font-weight="900" fill="#165a79">レース展開シミュレーション</text>
+  <g id="boatLayer"></g>
+</svg>
+</div>
+<div class="phaseBar"><div class="phase active" data-phase="0">スタート</div><div class="phase" data-phase="1">1周目<br>(1マーク)</div><div class="phase" data-phase="2">2周目<br>(2マーク)</div><div class="phase" data-phase="3">3周目<br>(ゴール)</div><div class="phase" data-phase="4">最終順位</div></div>
+<div class="visualLegend" id="visualLegend"></div>
+<div class="vResult" id="visualResult">「シミュレーション開始」を押すと、ここに展開が表示されます。</div>
+</section>
 <section class="card">
-<h2><span class="num" style="background:#7146d9">6</span>シミュレーション</h2>
+<h2><span class="num" style="background:#7146d9">7</span>シミュレーション</h2>
 <div class="simBtns"><button class="active" data-n="1">1回</button><button data-n="3">3回</button><button data-n="5">5回</button></div>
 <button class="run" id="run">▶ シミュレーション開始</button>
 <div id="status" style="font-size:12px;color:#718096;margin-top:8px"></div>
 </section>
 
 <section class="card">
-<h2><span class="num" style="background:#64748b">7</span>シミュレーションの考え方</h2>
+<h2>⚙️ シミュレーションの考え方</h2>
 <ul style="margin:0;padding-left:20px;color:#66798e;font-size:13px;line-height:1.8">
 <li>平均ST：0.07〜0.20から0.01刻みで選択。数値が小さいほど有利</li><li>展示・まわり足・直線：5.50〜8.50から0.05刻みで選択。数値が小さいほど有利</li><li>級別：A1 ＞ A2 ＞ B1 ＞ B2</li><li>過去10走：1着・2着・3着を0〜10から選択し、着順傾向として反映</li><li>選択したメイン艇・戦法を展開補正として加味</li><li>風向・風速・波高でコース補正とランダムな展開差を調整</li><li>各回にランダムな展開差を加えて順位を決定</li>
 </ul>
@@ -117,6 +156,12 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 </main>
 <script>
 const state={n:1,mainTactic:{boat:1,tactic:'escape'},weather:{dir:'none',speed:'',wave:''},boats:Array.from({length:6},(_,i)=>({lane:i+1,cls:'B1',st:'',ex:'',turn:'',straight:'',first:0,second:0,third:0}))};
+function randn(){
+ let u=0,v=0;
+ while(u===0)u=Math.random();
+ while(v===0)v=Math.random();
+ return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
 const colors=['l1','l2','l3','l4','l5','l6'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stOptions(v){
@@ -189,6 +234,7 @@ function score(b){
 }
 function simulate(){
  const N=state.n,f=Array.from({length:6},()=>[0,0,0]),comb={};
+ let lastTop=null;
  for(let r=0;r<N;r++){
    const wind=num(state.weather.speed), wave=num(state.weather.wave);
    const noise=.17 + Math.min(.18,wind*.012 + wave*.006);
@@ -197,14 +243,66 @@ function simulate(){
    const p=arr.slice(0,3).map(x=>x.i);
    p.forEach((x,pos)=>f[x][pos]++);
    const k=p.map(x=>x+1).join('-'); comb[k]=(comb[k]||0)+1;
+   if(r===N-1) lastTop=arr.map(x=>x.i);
  }
  renderResult(f,comb,N);
+ animateRace(lastTop||[0,1,2,3,4,5]);
 }
 function pct(n,N){return (n/N*100).toFixed(1)+'%'}
 function renderResult(f,c,N){document.getElementById('prob').innerHTML='<thead><tr><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr></thead><tbody>'+f.map((x,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}号艇</td><td>${pct(x[0],N)}</td><td>${pct(x[1],N)}</td><td>${pct(x[2],N)}</td><td>${pct(x[0]+x[1]+x[2],N)}</td></tr>`).join('')+'</tbody>';
 const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,20);document.getElementById('combos').innerHTML='<thead><tr><th>#</th><th>三連単</th><th>回数</th><th>出現率</th></tr></thead><tbody>'+arr.map((x,i)=>`<tr><td>${i+1}</td><td class="combo">${x[0]}</td><td>${x[1]}</td><td>${pct(x[1],N)}</td></tr>`).join('')+'</tbody>';
 document.getElementById('results').classList.add('show');document.getElementById('status').textContent=N.toLocaleString()+'回のシミュレーション完了';setTimeout(()=>document.getElementById('results').scrollIntoView({behavior:'smooth'}),50)}
 
+const boatEmoji=['🚤','🚤','🚤','🚤','🚤','🚤'];
+const boatColors=['#ffffff','#222222','#ed3151','#3191d8','#e1b900','#31ad2e'];
+function boatPos(lane,phase,rank){
+  // positions progress clockwise; rank slightly changes spacing.
+  const t=[0.08,0.26,0.48,0.68,0.88][phase];
+  const path=[
+    [165,390],[245,405],[480,410],[715,405],[810,350],[820,220],[735,145],[480,130],[225,145],[140,220],[140,335]
+  ];
+  const idx=Math.min(path.length-2,Math.floor(t*(path.length-1)));
+  const q=t*(path.length-1)-idx;
+  let x=path[idx][0]+(path[idx+1][0]-path[idx][0])*q;
+  let y=path[idx][1]+(path[idx+1][1]-path[idx][1])*q;
+  const side=(lane-2.5)*13;
+  x+=side*(phase<2?0.45:0.15);
+  y+=side*(phase<2?0.15:0.4);
+  if(phase===4){ x=185+rank*105; y=275; }
+  return [x,y];
+}
+function boatSvg(i,x,y,rank,phase){
+ const fill=boatColors[i]; const stroke=i===0?'#999':'#111';
+ const text= i===1 ? '#fff' : '#111';
+ return `<g class="boatDot" transform="translate(${x} ${y})" filter="url(#shadow)">
+ <path d="M-25 7 L-11 -6 L19 -4 L29 5 L13 12 L-18 12 Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+ <path d="M-8 -7 L4 -15 L13 -5" fill="none" stroke="${stroke}" stroke-width="2"/>
+ <text x="0" y="7" text-anchor="middle" font-size="12" font-weight="900" fill="${text}">${i+1}</text>
+ </g>`;
+}
+function animateRace(finalOrder){
+ const layer=document.getElementById('boatLayer'); if(!layer)return;
+ const phases=document.querySelectorAll('.phase');
+ const result=document.getElementById('visualResult');
+ const legend=document.getElementById('visualLegend');
+ legend.innerHTML=state.boats.map((b,i)=>`<span class="legendItem">${i+1}号艇：${tacticName(i)}</span>`).join('');
+ let step=0;
+ const order=finalOrder.slice();
+ const renderPhase=()=>{
+   phases.forEach((p,i)=>p.classList.toggle('active',i===step));
+   layer.innerHTML=order.map((boatIndex,rank)=>{
+     const [x,y]=boatPos(boatIndex+1,step,rank); return boatSvg(boatIndex,x,y,rank,step);
+   }).join('');
+   if(step<4){
+     result.textContent=step===0?'スタート準備中…':step===1?`1マーク：${state.mainTactic.boat}号艇の${tacticName(state.mainTactic.boat-1)}を反映中…`:step===2?'2マーク：順位変動をシミュレーション中…': '3周目：ゴールへ…';
+     step++; setTimeout(renderPhase,850);
+   }else{
+     const top=order.slice(0,3).map(i=>i+1).join('-');
+     result.textContent=`予測最終順位：${order.map(i=>i+1).join(' → ')}　｜　三連単：${top}`;
+   }
+ };
+ renderPhase();
+}
 document.getElementById('run').onclick=()=>{render();document.getElementById('status').textContent='計算中…';setTimeout(simulate,30)};document.getElementById('reset').onclick=()=>location.reload();
 </script>
 
