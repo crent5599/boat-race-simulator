@@ -60,6 +60,8 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 .mainTacticGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mainTacticGrid select{width:100%;min-height:48px;font-size:16px;padding:10px 12px;border:1px solid #afc3da;border-radius:10px;background:#fff;color:var(--text)}
 @media(max-width:700px){.mainTacticGrid{grid-template-columns:1fr}}
+
+.exitCard{display:none}.exitCard.show{display:block}.exitWrap{border-radius:15px;overflow:hidden;border:1px solid #9bbfd2;background:#9bdcf2}.exitWrap svg{display:block;width:100%;height:auto;background:#a9def2}.exitSummary{margin-top:10px;padding:12px;border-radius:11px;background:#f4f8fc;border:1px solid #d6e4f0;font-weight:800;line-height:1.65}.exitRanks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.exitRank{border:1px solid #d6e4f0;border-radius:10px;background:#fff;padding:9px;text-align:center;font-weight:800}.exitRank .pos{font-size:12px;color:#718096}.exitRank .boat{font-size:18px;margin:2px 0}.exitRank .state{font-size:12px;color:#536579}.exitBoat{filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}@media(max-width:700px){.exitRanks{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -258,7 +260,9 @@ function simulate(){
    if(r===N-1) lastTop=arr.map(x=>x.i);
  }
  renderResult(f,comb,N);
- staticRace(lastTop||[0,1,2,3,4,5]);
+ const finalOrder=lastTop||[0,1,2,3,4,5];
+ staticRace(finalOrder);
+ renderExitFormation(finalOrder);
 }
 function pct(n,N){return (n/N*100).toFixed(1)+'%'}
 function renderResult(f,c,N){document.getElementById('prob').innerHTML='<thead><tr><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr></thead><tbody>'+f.map((x,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}号艇</td><td>${pct(x[0],N)}</td><td>${pct(x[1],N)}</td><td>${pct(x[2],N)}</td><td>${pct(x[0]+x[1]+x[2],N)}</td></tr>`).join('')+'</tbody>';
@@ -376,6 +380,42 @@ function staticRace(finalOrder){
  if(state.mainTactic.tactic==='makurisashi') msg=`${main}号艇のまくり差しを赤線で強調。外から攻めながら内へ切り込む位置関係を表示。三連単上位：${top}`;
  result.textContent=msg;
 }
+function exitBoatSvg(i,x,y,angle,pos){
+ const fill=boatColors[i], stroke=boatStroke[i];
+ const num=i+1, txt=i===1?'#fff':'#111';
+ return `<g class="exitBoat" transform="translate(${x} ${y}) rotate(${angle})" filter="url(#exitShadow)"><path d="M-34 12 L-18 -12 L22 -9 L36 3 L16 16 L-25 16 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M-11 -11 L6 -20 L19 -6" fill="none" stroke="${stroke}" stroke-width="3"/><circle cx="0" cy="3" r="14" fill="${i===1?'#222':'#fff'}" opacity=".9"/><text x="0" y="8" text-anchor="middle" font-size="17" font-weight="900" fill="${txt}">${num}</text><circle cx="-42" cy="-19" r="15" fill="#1769d1" stroke="#fff" stroke-width="2"/><text x="-42" y="-14" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">${pos}</text></g>`;
+}
+function renderExitFormation(finalOrder){
+ const card=document.getElementById('exitCard'); card.classList.add('show');
+ const path=document.getElementById('exitPathLayer'), wake=document.getElementById('exitWakeLayer'), boats=document.getElementById('exitBoatLayer'), labels=document.getElementById('exitLabelLayer');
+ const main=state.mainTactic.boat, tactic=state.mainTactic.tactic;
+ // 第1Mを抜けて次の直線へ向かう「出口の瞬間」。順位順に十分な間隔を取って表示。
+ const positions={
+  0:[590,205,-18],1:[540,245,-10],2:[515,300,0],3:[545,350,10],4:[585,405,18],5:[625,445,25]
+ };
+ // 1号艇の逃げ・外攻めなど、展開ごとの出口ラインを少しだけ変える。
+ const coords=finalOrder.map((boatIdx,pos)=>{ let [x,y,a]=positions[pos]; const lane=boatIdx+1;
+   if(tactic==='makuri' && lane===main){x+=35;y-=28;a=-12;}
+   if(tactic==='inside' && lane===main){x-=12;y-=20;a=-8;}
+   if(tactic==='makurisashi' && lane===main){x+=10;y-=35;a=-20;}
+   if(tactic==='escape' && lane===1){x+=25;y-=12;a=-15;}
+   return {boatIdx,pos,x,y,a};
+ });
+ path.innerHTML=coords.map((m)=>{const color=m.boatIdx===main-1?'#e53935':'#fff'; const x2=m.x-105,y2=m.y+18; return `<path d="M ${x2} ${y2} Q ${m.x-65} ${m.y+8} ${m.x-35} ${m.y}" fill="none" stroke="${color}" stroke-width="${m.boatIdx===main-1?6:3}" stroke-dasharray="${m.boatIdx===main-1?'':'9 8'}" opacity=".85"/>`;}).join('');
+ wake.innerHTML=coords.map(m=>`<path d="M ${m.x+30} ${m.y+10} Q ${m.x+75} ${m.y+24} ${m.x+120} ${m.y+8}" fill="none" stroke="#fff" stroke-width="4" opacity=".55" stroke-dasharray="8 7"/>`).join('');
+ boats.innerHTML=coords.map(m=>exitBoatSvg(m.boatIdx,m.x,m.y,m.a,m.pos+1)).join('');
+ labels.innerHTML=coords.map(m=>{const lane=m.boatIdx+1; const stateText=(m.pos===0?'出口先頭':m.pos===1?'2番手':m.pos===2?'3番手':`${m.pos+1}番手`); const dx=40,dy=-42; return `<g><rect x="${m.x+dx}" y="${m.y+dy}" width="108" height="30" rx="9" fill="#fff" opacity=".95" stroke="${boatStroke[m.boatIdx]}" stroke-width="2"/><text x="${m.x+dx+54}" y="${m.y+dy+20}" text-anchor="middle" font-size="13" font-weight="900" fill="#203247">${lane}号艇・${stateText}</text></g>`;}).join('');
+ let p1='',p2='',p3='';
+ if(tactic==='escape'){p1=`1号艇は先マイから出口先頭へ。`;p2=`2号艇は内側の差し場を狙った位置。`;p3=`外の艇は旋回後、次の直線へ向かう隊形。`;}
+ if(tactic==='inside'){p1=`${main}号艇の差しが決まる想定で内側へ。`;p2=`前艇の引き波を越えた後の出口位置を表示。`;p3=`出口順位はシミュレーション結果を反映。`;}
+ if(tactic==='makuri'){p1=`${main}号艇が外から攻めた後の出口位置。`;p2=`1号艇が受けて膨らみ、内側の差し場が生まれる想定。`;p3=`攻めに乗った艇の位置も順位に反映。`;}
+ if(tactic==='makurisashi'){p1=`${main}号艇が外から攻めて内へ切り込む想定。`;p2=`第1M出口で内側へ入り込んだ艇を確認。`;p3=`各艇は重ならないよう出口隊形で表示。`;}
+ document.getElementById('exitInfo1').textContent='① '+p1; document.getElementById('exitInfo2').textContent='② '+p2; document.getElementById('exitInfo3').textContent='③ '+p3;
+ const top=finalOrder.slice(0,3).map(i=>i+1).join('-'); document.getElementById('exitSummary').textContent=`第1M出口の想定隊形：${finalOrder.map(i=>i+1).join(' → ')}　｜　三連単上位：${top}`;
+ const stateTexts=['出口先頭・先マイ','2番手・差し場','3番手・攻めに乗る','4番手・外回り','5番手・展開待ち','6番手・外側'];
+ document.getElementById('exitRanks').innerHTML=finalOrder.map((i,p)=>`<div class="exitRank"><div class="pos">${p+1}着</div><div class="boat" style="color:${boatStroke[i]}">${i+1}号艇</div><div class="state">${stateTexts[p]}</div></div>`).join('');
+}
+
 document.getElementById('run').onclick=()=>{render();document.getElementById('status').textContent='計算中…';setTimeout(simulate,30)};document.getElementById('reset').onclick=()=>location.reload();
 </script>
 
