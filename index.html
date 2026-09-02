@@ -112,8 +112,8 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 </section>
 
 <section class="card" id="visualCard">
-<h2><span class="num" style="background:#0b8f6a">6</span>第1ターンマーク 展開・出足シミュレーション</h2>
-<p class="hint">第1マーク周辺だけを拡大し、①スタート後の進入 → ②攻め艇の仕掛け → ③1号艇の先マイ・差し場の発生 → ④出足の瞬間、の因果関係を簡易再現します。</p>
+<h2><span class="num" style="background:#0b8f6a">6</span>第1ターンマーク まわり足時の展開</h2>
+<p class="hint">スタートからの動きはアニメーションせず、シミュレーションで想定した「第1マークをまわる瞬間」の各艇の位置・旋回ライン・引き波・展開を上から見た図で表示します。</p>
 <div class="visualWrap">
 <svg id="raceSvg" viewBox="0 0 960 560" role="img" aria-label="第1ターンマーク周辺の展開シミュレーション">
   <defs>
@@ -139,7 +139,7 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 </svg>
 </div>
 <div class="visualLegend" id="visualLegend"></div>
-<div class="vResult" id="visualResult">「シミュレーション開始」で、第1マーク周辺の艇の動きと展開を表示します。</div>
+<div class="vResult" id="visualResult">「シミュレーション開始」で、第1マークをまわる瞬間の各艇の位置と展開を表示します。</div>
 </section>
 <section class="card">
 <h2><span class="num" style="background:#7146d9">7</span>シミュレーション</h2>
@@ -255,7 +255,7 @@ function simulate(){
    if(r===N-1) lastTop=arr.map(x=>x.i);
  }
  renderResult(f,comb,N);
- animateRace(lastTop||[0,1,2,3,4,5]);
+ staticRace(lastTop||[0,1,2,3,4,5]);
 }
 function pct(n,N){return (n/N*100).toFixed(1)+'%'}
 function renderResult(f,c,N){document.getElementById('prob').innerHTML='<thead><tr><th>艇</th><th>1着率</th><th>2着率</th><th>3着率</th><th>3連率</th></tr></thead><tbody>'+f.map((x,i)=>`<tr><td class="${colors[i]}" style="font-weight:800">${i+1}号艇</td><td>${pct(x[0],N)}</td><td>${pct(x[1],N)}</td><td>${pct(x[2],N)}</td><td>${pct(x[0]+x[1]+x[2],N)}</td></tr>`).join('')+'</tbody>';
@@ -273,103 +273,89 @@ function movementModel(lane, rank){
   const straight=lower(b.straight,7.45,8.10);
   const isMain=state.mainTactic.boat===lane;
   const tactic=state.mainTactic.tactic;
-  let y=145+(lane-1)*42;
-  let x=150 + 14*rank + (st*42) + (ex*18);
-  let endY=y, endX=620 + Math.min(45,rank*8);
-  let radius=1;
-  if(lane===1){
-    endY=278; endX=665;
-    if(state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(tactic)){
-      const attack=state.mainTactic.boat;
-      if(attack>=3) { endY=296; endX=652; radius=1.18; }
-    }
-  }
-  if(lane===2){
-    endY=278; endX=690;
-    if(state.mainTactic.boat!==2 && ['makuri','makurisashi'].includes(tactic)) endY=250;
-    if(state.mainTactic.boat===1 && tactic==='escape') endY=306;
-  }
+
+  // 画像のイメージに合わせ、右側の1Mを中心に「まわり足の瞬間」を静止画で表現。
+  // rank はシミュレーション上の着順想定。外側の艇ほど大きな旋回半径を取る。
+  const baseY=[168,225,282,340,397,454][lane-1];
+  let x=430 + rank*24;
+  let y=baseY;
+  let tx=650, ty=280;
+  let curve=0;
+
+  if(lane===1){ tx=657; ty=282; curve=18; }
+  if(lane===2){ tx=675; ty=300; curve=10; }
+  if(lane===3){ tx=704; ty=266; curve=-8; }
+  if(lane===4){ tx=728; ty=236; curve=-34; }
+  if(lane===5){ tx=748; ty=325; curve=40; }
+  if(lane===6){ tx=715; ty=386; curve=58; }
+
+  // まわり足が良いほどマークへ近く、悪いほど外へ膨らむ。
+  const turnAdj=(turn-.5)*38;
+  tx += turnAdj;
+  ty += (straight-.5)*12;
+
+  // メイン戦法による「展開」を静止画のラインに反映。
   if(isMain){
-    if(tactic==='escape'){endY=278; endX=665; radius=1.0;}
-    if(tactic==='inside'){endY=305; endX=684; radius=0.92;}
-    if(tactic==='makuri'){endY=238; endX=690; radius=1.22;}
-    if(tactic==='makurisashi'){endY=258; endX=694; radius=1.12;}
-  } else {
-    if(lane>=3 && state.mainTactic.boat>=4 && tactic==='makuri') endY=235+(lane-3)*18;
-    if(lane>=3 && state.mainTactic.boat>=3 && tactic==='makurisashi') endY=260+(lane-3)*20;
+    if(tactic==='escape'){ tx=655; ty=280; curve=12; }
+    if(tactic==='inside'){ tx=675; ty=315; curve=18; }
+    if(tactic==='makuri'){ tx=714; ty=226; curve=-58; }
+    if(tactic==='makurisashi'){ tx=705; ty=270; curve=-34; }
   }
-  // 艇の足を「位置」だけでなく、出足の強弱として少し反映
-  endX += (st-.5)*22 + (ex-.5)*12 + (straight-.5)*10 + (turn-.5)*8;
-  return {x,y,endX,endY,st,ex,turn,straight,radius,isMain,tactic};
-}
-function boatPos(m,frame){
-  const t=frame===0?0:frame===1?.52:frame===2?.82:1;
-  let x=m.x+(m.endX-m.x)*t;
-  let y=m.y+(m.endY-m.y)*t;
-  // 1M直前だけ旋回弧を描かせる
-  if(frame>=2){
-    const bend=Math.sin((t-.72)*Math.PI*2)*22*m.radius;
-    y+=bend;
+
+  // 攻めを受ける1号艇、差し場を狙う2号艇を連動。
+  if(lane===1 && state.mainTactic.boat>=3 && ['makuri','makurisashi'].includes(tactic)){
+    tx=675; ty=296; curve=42;
   }
-  return [x,y];
+  if(lane===2 && state.mainTactic.boat>=3 && ['makuri','makurisashi'].includes(tactic)){
+    tx=684; ty=260; curve=-16;
+  }
+
+  return {x,y,tx,ty,curve,st,ex,turn,straight,isMain,tactic,lane};
 }
 function pathD(m){
-  const c1x=m.x+150, c2x=m.endX-120;
-  let c1y=m.y, c2y=m.endY;
-  if(m.isMain){
-    if(m.tactic==='makuri'){c1y=m.y-8;c2y=m.endY-28;}
-    if(m.tactic==='makurisashi'){c1y=m.y-4;c2y=m.endY-12;}
-    if(m.tactic==='inside'){c1y=m.y+4;c2y=m.endY+8;}
-  }
-  if(m.endY>m.y) c1y+=8;
-  return `M ${m.x} ${m.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${m.endX} ${m.endY}`;
+  const c1x=m.x+120;
+  const c2x=m.tx-100;
+  const c1y=m.y+m.curve*.10;
+  const c2y=m.ty+m.curve;
+  return `M ${m.x} ${m.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${m.tx} ${m.ty}`;
 }
-function boatSvg(i,x,y,rank){
+function boatSvg(i,x,y,turning=false){
  const fill=boatColors[i], stroke=boatStroke[i];
  const text=i===1?'#fff':'#111';
- return `<g transform="translate(${x} ${y})" filter="url(#shadow)"><path d="M-27 8 L-12 -7 L20 -5 L30 4 L14 12 L-19 12 Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/><path d="M-9 -8 L4 -16 L14 -5" fill="none" stroke="${stroke}" stroke-width="2"/><text x="0" y="7" text-anchor="middle" font-size="13" font-weight="900" fill="${text}">${i+1}</text></g>`;
+ const angle=({0:-20,1:-14,2:-7,3:8,4:17,5:25})[i]||0;
+ return `<g transform="translate(${x} ${y}) rotate(${angle})" filter="url(#shadow)"><path d="M-27 8 L-12 -7 L20 -5 L30 4 L14 12 L-19 12 Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/><path d="M-9 -8 L4 -16 L14 -5" fill="none" stroke="${stroke}" stroke-width="2"/><text x="0" y="7" text-anchor="middle" font-size="13" font-weight="900" fill="${text}">${i+1}</text></g>`;
 }
-function wakeSvg(m,frame,i){
- if(frame<2)return '';
- const [x,y]=boatPos(m,frame);
- const w=i===state.mainTactic.boat-1?'#e53935':'#ffffff';
- return `<path d="M ${x-34} ${y+8} Q ${x-10} ${y+18} ${x+12} ${y+8}" fill="none" stroke="${w}" stroke-width="3" opacity=".7" stroke-dasharray="6 5"/>`;
+function labelSvg(m,i){
+  const x=m.tx, y=m.ty;
+  let label='';
+  if(m.isMain) label=({escape:'先マイ・逃げ',inside:'差し',makuri:'まくり',makurisashi:'まくり差し'})[m.tactic];
+  else if(i===0 && state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(state.mainTactic.tactic)) label='攻めを受ける';
+  else if(i===1 && state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(state.mainTactic.tactic)) label='差し場';
+  if(!label)return '';
+  return `<g><rect x="${x+18}" y="${y-31}" width="${label.length*15+18}" height="25" rx="8" fill="#fff" opacity=".94" stroke="#9fb3c8"/><text x="${x+27}" y="${y-14}" font-size="13" font-weight="800" fill="#234">${label}</text></g>`;
 }
-function labelSvg(m,i,frame){
- if(frame<2)return '';
- const [x,y]=boatPos(m,frame);
- let label='';
- if(m.isMain) label=({escape:'先マイ・逃げ',inside:'差し',makuri:'まくり',makurisashi:'まくり差し'})[m.tactic];
- else if(i===0 && state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(state.mainTactic.tactic)) label='攻めを受ける';
- else if(i===1 && state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(state.mainTactic.tactic)) label='差し場を確認';
- if(!label)return '';
- return `<g><rect x="${x+20}" y="${y-30}" width="${label.length*15+18}" height="25" rx="8" fill="#ffffff" opacity=".92" stroke="#aac"/><text x="${x+29}" y="${y-13}" font-size="13" font-weight="800" fill="#234">${label}</text></g>`;
+function wakeSvg(m,i){
+  const x=m.tx, y=m.ty;
+  const c=i===state.mainTactic.boat-1 ? '#e53935' : '#ffffff';
+  return `<path d="M ${x-38} ${y+15} Q ${x-8} ${y+28} ${x+25} ${y+10}" fill="none" stroke="${c}" stroke-width="3" opacity=".7" stroke-dasharray="7 6"/>`;
 }
-function animateRace(finalOrder){
+function staticRace(finalOrder){
  const pathLayer=document.getElementById('pathLayer'),wakeLayer=document.getElementById('wakeLayer'),layer=document.getElementById('boatLayer'),labelLayer=document.getElementById('labelLayer');
  const result=document.getElementById('visualResult'),legend=document.getElementById('visualLegend');
  const main=state.mainTactic.boat;
- const models=finalOrder.map((boatIndex,rank)=>({i:boatIndex,m:movementModel(boatIndex+1,rank)}));
+ const models=state.boats.map((b,i)=>movementModel(i+1,finalOrder.indexOf(i)));
  legend.innerHTML=state.boats.map((b,i)=>`<span class="legendItem">${i+1}号艇${i+1===main?'：メイン '+tacticName(i):''}</span>`).join('');
- let frame=0;
- const render=()=>{
-   pathLayer.innerHTML=models.map(({i,m})=>`<path d="${pathD(m)}" fill="none" stroke="${i===main-1?'#e53935':'#ffffff'}" stroke-width="${i===main-1?8:3}" opacity="${i===main-1?.9:.72}" stroke-dasharray="${i===main-1?'':'7 7'}" marker-end="url(#${i===main-1?'arrowMain':'arrowNormal'})"/>`).join('');
-   wakeLayer.innerHTML=models.map(({i,m})=>wakeSvg(m,frame,i)).join('');
-   layer.innerHTML=models.map(({i,m},rank)=>{const [x,y]=boatPos(m,frame);return boatSvg(i,x,y,rank)}).join('');
-   labelLayer.innerHTML=models.map(({i,m})=>labelSvg(m,i,frame)).join('');
-   if(frame===0){result.textContent=`①スタート後：STと足の差を反映して第1マークへ進入。メインは${main}号艇・${tacticName(main-1)}。`;frame=1;setTimeout(render,700);}
-   else if(frame===1){result.textContent=`②攻めの仕掛け：${main}号艇の${tacticName(main-1)}で進入ラインを変化。`;frame=2;setTimeout(render,700);}
-   else if(frame===2){
-     if(['makuri','makurisashi'].includes(state.mainTactic.tactic) && main!==1) result.textContent=`③1号艇が攻めを受ける → ターンが膨らむ想定。2号艇には差し場が発生する可能性を表示。`;
-     else if(state.mainTactic.tactic==='inside' && main!==1) result.textContent=`③${main}号艇が内側へ差し込み、先行艇の引き波を越えて内へ入る動きを表示。`;
-     else result.textContent=`③1M直前：各艇の旋回位置と出足を比較。`;
-     frame=3;setTimeout(render,750);
-   }else{
-     const top=finalOrder.slice(0,3).map(i=>i+1).join('-');
-     result.textContent=`④出足の瞬間：1M進入順 ${finalOrder.map(i=>i+1).join(' → ')} ｜ 三連単上位 ${top}`;
-   }
- };
- render();
+ pathLayer.innerHTML=models.map((m,i)=>`<path d="${pathD(m)}" fill="none" stroke="${i===main-1?'#e53935':'#ffffff'}" stroke-width="${i===main-1?7:3}" opacity="${i===main-1?.92:.72}" stroke-dasharray="${i===main-1?'':'8 7'}" marker-end="url(#${i===main-1?'arrowMain':'arrowNormal'})"/>`).join('');
+ wakeLayer.innerHTML=models.map((m,i)=>wakeSvg(m,i)).join('');
+ layer.innerHTML=models.map((m,i)=>boatSvg(i,m.tx,m.ty,true)).join('');
+ labelLayer.innerHTML=models.map((m,i)=>labelSvg(m,i)).join('');
+ const top=finalOrder.slice(0,3).map(i=>i+1).join('-');
+ let msg='';
+ if(state.mainTactic.tactic==='escape') msg=`1号艇の先マイを中心に、内側の艇が差し場を探し、外側は旋回半径を取る想定。三連単上位：${top}`;
+ if(state.mainTactic.tactic==='inside') msg=`${main}号艇が内側の空いたラインへ差し込む想定。引き波を越えるため、まわり足の良し悪しを強く反映。三連単上位：${top}`;
+ if(state.mainTactic.tactic==='makuri') msg=`${main}号艇が外から勢いよく攻め、1号艇の旋回を外へ押し出す想定。後続艇は攻めに乗る展開。三連単上位：${top}`;
+ if(state.mainTactic.tactic==='makurisashi') msg=`${main}号艇が外から攻めながら内へ切り込み、1号艇と2号艇の間にできるスペースを狙う想定。三連単上位：${top}`;
+ result.textContent=msg;
 }
 document.getElementById('run').onclick=()=>{render();document.getElementById('status').textContent='計算中…';setTimeout(simulate,30)};document.getElementById('reset').onclick=()=>location.reload();
 </script>
