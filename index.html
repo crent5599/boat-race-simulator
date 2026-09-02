@@ -56,10 +56,14 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 .boatDot{transition:transform .15s linear}
 @media(max-width:700px){.tacticGrid{grid-template-columns:1fr}.phaseBar{grid-template-columns:repeat(5,1fr)}.phase{font-size:10px;padding:7px 2px}}
 
+
+.mainTacticGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mainTacticGrid select{width:100%;min-height:48px;font-size:16px;padding:10px 12px;border:1px solid #afc3da;border-radius:10px;background:#fff;color:var(--text)}
+@media(max-width:700px){.mainTacticGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><h1>🚤 競艇レースシミュレーター</h1><p>6艇のデータを手入力して、100〜10,000回シミュレーション</p></header>
+<header><h1>🚤 競艇レースシミュレーター</h1><p>6艇のデータを手入力して、1〜5回シミュレーション</p></header>
 <main>
 <section class="card">
 <h2><span class="num">1</span>レース情報</h2>
@@ -94,17 +98,17 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 </section>
 
 <section class="card">
-<h2><span class="num" style="background:#e85d04">5</span>展開パターン</h2>
-<p class="hint">各艇が1マークでどの攻め方をするかを設定します。1号艇は逃げ、2号艇は差しを固定。3〜6号艇は「まくり」か「まくり差し」を選択できます。</p>
-<div class="tacticGrid">
-<div class="tacticItem"><div class="tacticHead"><span class="tacticBadge l1">1</span>1号艇</div><select id="tactic1" class="locked" disabled><option value="escape">逃げ</option></select></div>
-<div class="tacticItem"><div class="tacticHead"><span class="tacticBadge l2">2</span>2号艇</div><select id="tactic2" class="locked" disabled><option value="inside">差し</option></select></div>
-<div class="tacticItem"><div class="tacticHead"><span class="tacticBadge l3">3</span>3号艇</div><select id="tactic3"><option value="makuri">まくり</option><option value="makurisashi">まくり差し</option></select></div>
-<div class="tacticItem"><div class="tacticHead"><span class="tacticBadge l4">4</span>4号艇</div><select id="tactic4"><option value="makuri">まくり</option><option value="makurisashi">まくり差し</option></select></div>
-<div class="tacticItem"><div class="tacticHead"><span class="tacticBadge l5">5</span>5号艇</div><select id="tactic5"><option value="makuri">まくり</option><option value="makurisashi">まくり差し</option></select></div>
-<div class="tacticItem"><div class="tacticHead"><span class="tacticBadge l6">6</span>6号艇</div><select id="tactic6"><option value="makuri">まくり</option><option value="makurisashi">まくり差し</option></select></div>
+<h2><span class="num" style="background:#e85d04">5</span>展開パターンの選択</h2>
+<p class="hint">メインの展開を1つだけ選択します。攻める艇（1〜6号艇）と戦法（逃げ・差し・まくり・まくり差し）を選んでください。</p>
+<div class="mainTacticGrid">
+  <div class="field"><label>メイン艇</label><select id="mainBoat">
+    <option value="1" selected>1号艇</option><option value="2">2号艇</option><option value="3">3号艇</option><option value="4">4号艇</option><option value="5">5号艇</option><option value="6">6号艇</option>
+  </select></div>
+  <div class="field"><label>メイン戦法</label><select id="mainTactic">
+    <option value="escape" selected>逃げ</option><option value="inside">差し</option><option value="makuri">まくり</option><option value="makurisashi">まくり差し</option>
+  </select></div>
 </div>
-<div class="notice">設定した展開パターンは、シミュレーションの順位計算とレース可視化の両方に反映します。</div>
+<div class="notice">選択した1艇・1戦法をメイン展開として、順位計算とレース可視化に反映します。他の艇は通常の能力値・ST・タイム・風波条件を中心にシミュレーションします。</div>
 </section>
 
 <section class="card" id="visualCard">
@@ -117,9 +121,7 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
     <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".22"/></filter>
   </defs>
   <rect x="0" y="0" width="960" height="540" fill="url(#water)"/>
-  <path d="M185 95 H775 Q870 95 870 190 V350 Q870 445 775 445 H185 Q90 445 90 350 V190 Q90 95 185 95Z" fill="none" stroke="#f06a21" stroke-width="7" stroke-dasharray="24 18"/>
-  <path d="M205 118 H755 Q845 118 845 205 V335 Q845 422 755 422 H205 Q115 422 115 335 V205 Q115 118 205 118Z" fill="none" stroke="#8ac926" stroke-width="7" stroke-dasharray="24 18"/>
-  <path d="M225 141 H735 Q820 141 820 220 V320 Q820 399 735 399 H225 Q140 399 140 320 V220 Q140 141 225 141Z" fill="none" stroke="#168de2" stroke-width="7" stroke-dasharray="24 18"/>
+  <path d="M185 95 H775 Q870 95 870 190 V350 Q870 445 775 445 H185 Q90 445 90 350 V190 Q90 95 185 95Z" fill="none" stroke="#168de2" stroke-width="5"/>
   <circle cx="285" cy="270" r="42" fill="#f4f4f4" stroke="#f08b55" stroke-width="3"/><circle cx="675" cy="270" r="42" fill="#f4f4f4" stroke="#f08b55" stroke-width="3"/>
   <path d="M480 385 V500" stroke="#fff" stroke-width="12"/><rect x="46" y="220" width="54" height="125" rx="4" fill="#e8e8e8" stroke="#777" stroke-width="2"/><text x="73" y="285" text-anchor="middle" font-size="22" font-weight="800" fill="#444" transform="rotate(-90 73 285)">スタート</text>
   <text x="480" y="45" text-anchor="middle" font-size="22" font-weight="900" fill="#165a79">レース展開シミュレーション</text>
@@ -132,7 +134,7 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 </section>
 <section class="card">
 <h2><span class="num" style="background:#7146d9">7</span>シミュレーション</h2>
-<div class="simBtns"><button data-n="100">100回</button><button class="active" data-n="1000">1000回</button><button data-n="10000">10000回</button></div>
+<div class="simBtns"><button class="active" data-n="1">1回</button><button data-n="3">3回</button><button data-n="5">5回</button></div>
 <button class="run" id="run">▶ シミュレーション開始</button>
 <div id="status" style="font-size:12px;color:#718096;margin-top:8px"></div>
 </section>
@@ -140,7 +142,7 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 <section class="card">
 <h2>⚙️ シミュレーションの考え方</h2>
 <ul style="margin:0;padding-left:20px;color:#66798e;font-size:13px;line-height:1.8">
-<li>平均ST：0.07〜0.20から0.01刻みで選択。数値が小さいほど有利</li><li>展示・まわり足・直線：5.50〜8.50から0.05刻みで選択。数値が小さいほど有利</li><li>級別：A1 ＞ A2 ＞ B1 ＞ B2</li><li>過去10走：1着・2着・3着を0〜10から選択し、着順傾向として反映</li><li>1号艇にはコース優位性を加味</li><li>風向・風速・波高でコース補正とランダムな展開差を調整</li><li>各回にランダムな展開差を加えて順位を決定</li>
+<li>平均ST：0.07〜0.20から0.01刻みで選択。数値が小さいほど有利</li><li>展示・まわり足・直線：5.50〜8.50から0.05刻みで選択。数値が小さいほど有利</li><li>級別：A1 ＞ A2 ＞ B1 ＞ B2</li><li>過去10走：1着・2着・3着を0〜10から選択し、着順傾向として反映</li><li>選択したメイン艇・戦法を展開補正として加味</li><li>風向・風速・波高でコース補正とランダムな展開差を調整</li><li>各回にランダムな展開差を加えて順位を決定</li>
 </ul>
 <div class="notice">※このシミュレーションは参考値です。実際のレース結果や的中を保証するものではありません。</div>
 </section>
@@ -153,7 +155,7 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 <footer>競艇レースシミュレーター</footer>
 </main>
 <script>
-const state={n:1000,weather:{dir:'none',speed:'',wave:''},boats:Array.from({length:6},(_,i)=>({lane:i+1,cls:'B1',st:'',ex:'',turn:'',straight:'',first:0,second:0,third:0}))};
+const state={n:1,mainTactic:{boat:1,tactic:'escape'},weather:{dir:'none',speed:'',wave:''},boats:Array.from({length:6},(_,i)=>({lane:i+1,cls:'B1',st:'',ex:'',turn:'',straight:'',first:0,second:0,third:0}))};
 const colors=['l1','l2','l3','l4','l5','l6'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stOptions(v){
@@ -189,6 +191,10 @@ function pastCard(b,i){return `<div class="boat"><div class="head ${colors[i]}">
 function render(){document.getElementById('boats').innerHTML=state.boats.map(boatCard).join('');document.getElementById('past').innerHTML=state.boats.map(pastCard).join('');
  document.querySelectorAll('[data-k]').forEach(el=>{const b=state.boats[+el.dataset.i];el.value=b[el.dataset.k];el.oninput=()=>{b[el.dataset.k]=el.value};el.onchange=()=>{b[el.dataset.k]=el.value}})}
 render();
+const mainBoatEl=document.getElementById('mainBoat');
+const mainTacticEl=document.getElementById('mainTactic');
+if(mainBoatEl) mainBoatEl.onchange=()=>{state.mainTactic.boat=+mainBoatEl.value};
+if(mainTacticEl) mainTacticEl.onchange=()=>{state.mainTactic.tactic=mainTacticEl.value};
 ['windDir','windSpeed','waveHeight'].forEach(id=>{const el=document.getElementById(id);const k=id==='windDir'?'dir':id==='windSpeed'?'speed':'wave';el.oninput=el.onchange=()=>state.weather[k]=el.value});
 document.querySelectorAll('[data-n]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-n]').forEach(x=>x.classList.remove('active'));btn.classList.add('active');state.n=+btn.dataset.n});
 function num(v,d=0){const n=parseFloat(v);return Number.isFinite(n)?n:d}
@@ -196,11 +202,11 @@ function cls(c){return ({A1:1,A2:.72,B1:.42,B2:.18})[String(c).toUpperCase()]??.
 function pastFactor(b){const a=num(b.first),c=num(b.second),d=num(b.third);const top=a+c+d;return .55*(a/10)+.28*(c/10)+.17*(d/10)+.10*(top/10)}
 function lower(v,good,bad){const n=num(v);if(!n)return .5;return Math.max(0,Math.min(1,(bad-n)/(bad-good)))}
 function tacticFor(i){
-  const el=document.getElementById('tactic'+(i+1));
-  return el ? el.value : (i===0?'escape':i===1?'inside':'makuri');
+  return (state.mainTactic.boat-1===i) ? state.mainTactic.tactic : 'normal';
 }
 function tacticName(i){
-  return ({escape:'逃げ',inside:'差し',makuri:'まくり',makurisashi:'まくり差し'})[tacticFor(i)]||'';
+  if(state.mainTactic.boat-1!==i) return '通常';
+  return ({escape:'逃げ',inside:'差し',makuri:'まくり',makurisashi:'まくり差し'})[state.mainTactic.tactic]||'';
 }
 function score(b){
  const st=lower(b.st,.10,.24),ex=lower(b.ex,6.65,7.05),tu=lower(b.turn,7.45,8.25),sr=lower(b.straight,7.45,8.10);
@@ -282,7 +288,7 @@ function animateRace(finalOrder){
      const [x,y]=boatPos(boatIndex+1,step,rank); return boatSvg(boatIndex,x,y,rank,step);
    }).join('');
    if(step<4){
-     result.textContent=step===0?'スタート準備中…':step===1?'1マーク：選択した展開パターンを反映中…':step===2?'2マーク：順位変動をシミュレーション中…': '3周目：ゴールへ…';
+     result.textContent=step===0?'スタート準備中…':step===1?`1マーク：${state.mainTactic.boat}号艇の${tacticName(state.mainTactic.boat-1)}を反映中…`:step===2?'2マーク：順位変動をシミュレーション中…': '3周目：ゴールへ…';
      step++; setTimeout(renderPhase,850);
    }else{
      const top=order.slice(0,3).map(i=>i+1).join('-');
