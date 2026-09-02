@@ -124,12 +124,12 @@ function boatCard(b,i){return `<div class="boat"><div class="head ${colors[i]}">
 <div class="field"><label>展示タイム</label><select data-i="${i}" data-k="ex">${timeOptions(b.ex)}</select></div>
 <div class="field"><label>まわり足</label><select data-i="${i}" data-k="turn">${timeOptions(b.turn)}</select></div>
 <div class="field"><label>直線タイム</label><select data-i="${i}" data-k="straight">${timeOptions(b.straight)}</select></div>
-</div></div>}
+</div></div>`}
 function pastCard(b,i){return `<div class="boat"><div class="head ${colors[i]}">${i+1}号艇</div><div class="body"><div class="past">
 <div class="field"><label>1着数</label><select data-i="${i}" data-k="first">${countOptions(b.first)}</select></div>
 <div class="field"><label>2着数</label><select data-i="${i}" data-k="second">${countOptions(b.second)}</select></div>
 <div class="field"><label>3着数</label><select data-i="${i}" data-k="third">${countOptions(b.third)}</select></div>
-</div></div></div>}
+</div></div></div>`}
 function render(){document.getElementById('boats').innerHTML=state.boats.map(boatCard).join('');document.getElementById('past').innerHTML=state.boats.map(pastCard).join('');
  document.querySelectorAll('[data-k]').forEach(el=>{const b=state.boats[+el.dataset.i];el.value=b[el.dataset.k];el.oninput=()=>{b[el.dataset.k]=el.value};el.onchange=()=>{b[el.dataset.k]=el.value}})}
 render();
