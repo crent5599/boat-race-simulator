@@ -146,8 +146,43 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 <div class="visualLegend" id="visualLegend"></div>
 <div class="vResult" id="visualResult">「シミュレーション開始」で、第1マークをまわる瞬間の各艇の位置と展開を表示します。</div>
 </section>
+
+<section class="card exitCard" id="exitCard">
+<h2><span class="num" style="background:#e53935">7</span>第1ターンマークを抜けた直後の隊形</h2>
+<p class="hint">シミュレーション最後の1回の順位を使い、第1ターンマークを抜けて次の直線へ向かう直後の隊形を簡易表示します。6艇すべてを重ならない位置に配置し、順位・メイン戦法・展開理由を確認できます。</p>
+<div class="exitWrap">
+<svg id="exitSvg" viewBox="0 0 1000 600" role="img" aria-label="第1ターンマーク出口直後の6艇隊形">
+  <defs>
+    <linearGradient id="exitWater" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfeaf8"/><stop offset="1" stop-color="#79c9e8"/></linearGradient>
+    <filter id="exitShadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".25"/></filter>
+    <marker id="exitArrowMain" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M0,0 L14,7 L0,14 z" fill="#e53935"/></marker>
+    <marker id="exitArrowNormal" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto"><path d="M0,0 L11,5.5 L0,11 z" fill="#ffffff"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="600" fill="url(#exitWater)"/>
+  <path d="M70 90 H670 Q850 90 850 300 Q850 510 670 510 H70" fill="none" stroke="#2c91df" stroke-width="7" opacity=".75"/>
+  <path d="M80 150 H620 Q775 150 775 300 Q775 450 620 450 H80" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="14 14" opacity=".75"/>
+  <path d="M95 210 H570 Q700 210 700 300 Q700 390 570 390 H95" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="10 12" opacity=".55"/>
+  <text x="60" y="48" font-size="25" font-weight="900" fill="#165a79">第1M出口 → 次の直線</text>
+  <circle cx="805" cy="300" r="70" fill="#fff" opacity=".94" stroke="#f0784a" stroke-width="5"/>
+  <path d="M805 230 L831 275 L823 348 L787 348 L779 275 Z" fill="#fff" stroke="#e85d04" stroke-width="4"/>
+  <text x="805" y="307" text-anchor="middle" font-size="22" font-weight="900" fill="#444">1M</text>
+  <text x="805" y="392" text-anchor="middle" font-size="20" font-weight="900" fill="#165a79">第1ターンマーク</text>
+  <text x="805" y="418" text-anchor="middle" font-size="14" font-weight="800" fill="#165a79">ここを抜けた直後の隊形</text>
+  <path d="M720 300 H500" stroke="#165a79" stroke-width="5" stroke-dasharray="10 9" marker-end="url(#exitArrowNormal)" opacity=".8"/>
+  <g id="exitPathLayer"></g>
+  <g id="exitWakeLayer"></g>
+  <g id="exitBoatLayer"></g>
+  <g id="exitLabelLayer"></g>
+</svg>
+</div>
+<div class="exitSummary" id="exitSummary"></div>
+<div class="exitRanks" id="exitRanks"></div>
+<div class="notice" style="margin-top:10px">赤線＝選択したメイン艇・戦法のライン。順位はシミュレーション結果、位置は「第1M出口」を説明するための簡易モデルです。</div>
+<div class="exitSummary" style="margin-top:10px"><div id="exitInfo1"></div><div id="exitInfo2"></div><div id="exitInfo3"></div></div>
+</section>
+
 <section class="card">
-<h2><span class="num" style="background:#7146d9">7</span>シミュレーション</h2>
+<h2><span class="num" style="background:#7146d9">8</span>シミュレーション</h2>
 <div class="simBtns"><button class="active" data-n="1">1回</button><button data-n="3">3回</button><button data-n="5">5回</button></div>
 <button class="run" id="run">▶ シミュレーション開始</button>
 <div id="status" style="font-size:12px;color:#718096;margin-top:8px"></div>
