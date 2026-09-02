@@ -112,25 +112,34 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 </section>
 
 <section class="card" id="visualCard">
-<h2><span class="num" style="background:#0b8f6a">6</span>レース展開の可視化</h2>
-<p class="hint">シミュレーション結果をもとに、スタートから3周目ゴールまでの展開をアニメーション表示します。</p>
+<h2><span class="num" style="background:#0b8f6a">6</span>第1ターンマーク 展開・出足シミュレーション</h2>
+<p class="hint">第1マーク周辺だけを拡大し、①スタート後の進入 → ②攻め艇の仕掛け → ③1号艇の先マイ・差し場の発生 → ④出足の瞬間、の因果関係を簡易再現します。</p>
 <div class="visualWrap">
-<svg id="raceSvg" viewBox="0 0 960 540" role="img" aria-label="ボートレース展開シミュレーション">
+<svg id="raceSvg" viewBox="0 0 960 560" role="img" aria-label="第1ターンマーク周辺の展開シミュレーション">
   <defs>
-    <linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9e8f7"/><stop offset="1" stop-color="#7cc9e8"/></linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9e8f7"/><stop offset="1" stop-color="#78c6e6"/></linearGradient>
     <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".22"/></filter>
+    <marker id="arrowMain" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e53935"/></marker>
+    <marker id="arrowNormal" markerWidth="9" markerHeight="9" refX="8" refY="5" orient="auto"><path d="M0,0 L9,5 L0,10 z" fill="#ffffff"/></marker>
   </defs>
-  <rect x="0" y="0" width="960" height="540" fill="url(#water)"/>
-  <path d="M185 95 H775 Q870 95 870 190 V350 Q870 445 775 445 H185 Q90 445 90 350 V190 Q90 95 185 95Z" fill="none" stroke="#168de2" stroke-width="5"/>
-  <circle cx="285" cy="270" r="42" fill="#f4f4f4" stroke="#f08b55" stroke-width="3"/><circle cx="675" cy="270" r="42" fill="#f4f4f4" stroke="#f08b55" stroke-width="3"/>
-  <path d="M480 385 V500" stroke="#fff" stroke-width="12"/><rect x="46" y="220" width="54" height="125" rx="4" fill="#e8e8e8" stroke="#777" stroke-width="2"/><text x="73" y="285" text-anchor="middle" font-size="22" font-weight="800" fill="#444" transform="rotate(-90 73 285)">スタート</text>
-  <text x="480" y="45" text-anchor="middle" font-size="22" font-weight="900" fill="#165a79">レース展開シミュレーション</text>
+  <rect x="0" y="0" width="960" height="560" fill="url(#water)"/>
+  <path d="M70 72 H635 Q860 72 860 280 Q860 488 635 488 H70" fill="none" stroke="#168de2" stroke-width="5" opacity=".65"/>
+  <path d="M95 105 H610 Q800 105 800 280 Q800 455 610 455 H95" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="12 12" opacity=".75"/>
+  <rect x="28" y="218" width="62" height="125" rx="5" fill="#e8e8e8" stroke="#777" stroke-width="2"/>
+  <text x="59" y="283" text-anchor="middle" font-size="18" font-weight="800" fill="#444" transform="rotate(-90 59 283)">スタート側</text>
+  <circle cx="735" cy="280" r="49" fill="#f7f7f7" stroke="#ef8354" stroke-width="4"/>
+  <path d="M735 227 L753 262 L747 313 L723 313 L717 262 Z" fill="#fff" stroke="#e85d04" stroke-width="3"/>
+  <text x="735" y="286" text-anchor="middle" font-size="16" font-weight="900" fill="#444">1M</text>
+  <text x="735" y="357" text-anchor="middle" font-size="18" font-weight="900" fill="#165a79">第1ターンマーク</text>
+  <text x="300" y="38" font-size="20" font-weight="900" fill="#165a79">1周目・第1マーク攻防（右側が1M）</text>
+  <g id="pathLayer"></g>
+  <g id="wakeLayer"></g>
   <g id="boatLayer"></g>
+  <g id="labelLayer"></g>
 </svg>
 </div>
-<div class="phaseBar"><div class="phase active" data-phase="0">スタート</div><div class="phase" data-phase="1">1周目<br>(1マーク)</div><div class="phase" data-phase="2">2周目<br>(2マーク)</div><div class="phase" data-phase="3">3周目<br>(ゴール)</div><div class="phase" data-phase="4">最終順位</div></div>
 <div class="visualLegend" id="visualLegend"></div>
-<div class="vResult" id="visualResult">「シミュレーション開始」を押すと、ここに展開が表示されます。</div>
+<div class="vResult" id="visualResult">「シミュレーション開始」で、第1マーク周辺の艇の動きと展開を表示します。</div>
 </section>
 <section class="card">
 <h2><span class="num" style="background:#7146d9">7</span>シミュレーション</h2>
@@ -253,55 +262,114 @@ function renderResult(f,c,N){document.getElementById('prob').innerHTML='<thead><
 const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,20);document.getElementById('combos').innerHTML='<thead><tr><th>#</th><th>三連単</th><th>回数</th><th>出現率</th></tr></thead><tbody>'+arr.map((x,i)=>`<tr><td>${i+1}</td><td class="combo">${x[0]}</td><td>${x[1]}</td><td>${pct(x[1],N)}</td></tr>`).join('')+'</tbody>';
 document.getElementById('results').classList.add('show');document.getElementById('status').textContent=N.toLocaleString()+'回のシミュレーション完了';setTimeout(()=>document.getElementById('results').scrollIntoView({behavior:'smooth'}),50)}
 
-const boatEmoji=['🚤','🚤','🚤','🚤','🚤','🚤'];
 const boatColors=['#ffffff','#222222','#ed3151','#3191d8','#e1b900','#31ad2e'];
-function boatPos(lane,phase,rank){
-  // positions progress clockwise; rank slightly changes spacing.
-  const t=[0.08,0.26,0.48,0.68,0.88][phase];
-  const path=[
-    [165,390],[245,405],[480,410],[715,405],[810,350],[820,220],[735,145],[480,130],[225,145],[140,220],[140,335]
-  ];
-  const idx=Math.min(path.length-2,Math.floor(t*(path.length-1)));
-  const q=t*(path.length-1)-idx;
-  let x=path[idx][0]+(path[idx+1][0]-path[idx][0])*q;
-  let y=path[idx][1]+(path[idx+1][1]-path[idx][1])*q;
-  const side=(lane-2.5)*13;
-  x+=side*(phase<2?0.45:0.15);
-  y+=side*(phase<2?0.15:0.4);
-  if(phase===4){ x=185+rank*105; y=275; }
+const boatStroke=['#888','#111','#a91631','#17679f','#9b7b00','#1c7a20'];
+
+function movementModel(lane, rank){
+  const b=state.boats[lane-1];
+  const st=lower(b.st,.10,.24);
+  const ex=lower(b.ex,6.65,7.05);
+  const turn=lower(b.turn,7.45,8.25);
+  const straight=lower(b.straight,7.45,8.10);
+  const isMain=state.mainTactic.boat===lane;
+  const tactic=state.mainTactic.tactic;
+  let y=145+(lane-1)*42;
+  let x=150 + 14*rank + (st*42) + (ex*18);
+  let endY=y, endX=620 + Math.min(45,rank*8);
+  let radius=1;
+  if(lane===1){
+    endY=278; endX=665;
+    if(state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(tactic)){
+      const attack=state.mainTactic.boat;
+      if(attack>=3) { endY=296; endX=652; radius=1.18; }
+    }
+  }
+  if(lane===2){
+    endY=278; endX=690;
+    if(state.mainTactic.boat!==2 && ['makuri','makurisashi'].includes(tactic)) endY=250;
+    if(state.mainTactic.boat===1 && tactic==='escape') endY=306;
+  }
+  if(isMain){
+    if(tactic==='escape'){endY=278; endX=665; radius=1.0;}
+    if(tactic==='inside'){endY=305; endX=684; radius=0.92;}
+    if(tactic==='makuri'){endY=238; endX=690; radius=1.22;}
+    if(tactic==='makurisashi'){endY=258; endX=694; radius=1.12;}
+  } else {
+    if(lane>=3 && state.mainTactic.boat>=4 && tactic==='makuri') endY=235+(lane-3)*18;
+    if(lane>=3 && state.mainTactic.boat>=3 && tactic==='makurisashi') endY=260+(lane-3)*20;
+  }
+  // 艇の足を「位置」だけでなく、出足の強弱として少し反映
+  endX += (st-.5)*22 + (ex-.5)*12 + (straight-.5)*10 + (turn-.5)*8;
+  return {x,y,endX,endY,st,ex,turn,straight,radius,isMain,tactic};
+}
+function boatPos(m,frame){
+  const t=frame===0?0:frame===1?.52:frame===2?.82:1;
+  let x=m.x+(m.endX-m.x)*t;
+  let y=m.y+(m.endY-m.y)*t;
+  // 1M直前だけ旋回弧を描かせる
+  if(frame>=2){
+    const bend=Math.sin((t-.72)*Math.PI*2)*22*m.radius;
+    y+=bend;
+  }
   return [x,y];
 }
-function boatSvg(i,x,y,rank,phase){
- const fill=boatColors[i]; const stroke=i===0?'#999':'#111';
- const text= i===1 ? '#fff' : '#111';
- return `<g class="boatDot" transform="translate(${x} ${y})" filter="url(#shadow)">
- <path d="M-25 7 L-11 -6 L19 -4 L29 5 L13 12 L-18 12 Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
- <path d="M-8 -7 L4 -15 L13 -5" fill="none" stroke="${stroke}" stroke-width="2"/>
- <text x="0" y="7" text-anchor="middle" font-size="12" font-weight="900" fill="${text}">${i+1}</text>
- </g>`;
+function pathD(m){
+  const c1x=m.x+150, c2x=m.endX-120;
+  let c1y=m.y, c2y=m.endY;
+  if(m.isMain){
+    if(m.tactic==='makuri'){c1y=m.y-8;c2y=m.endY-28;}
+    if(m.tactic==='makurisashi'){c1y=m.y-4;c2y=m.endY-12;}
+    if(m.tactic==='inside'){c1y=m.y+4;c2y=m.endY+8;}
+  }
+  if(m.endY>m.y) c1y+=8;
+  return `M ${m.x} ${m.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${m.endX} ${m.endY}`;
+}
+function boatSvg(i,x,y,rank){
+ const fill=boatColors[i], stroke=boatStroke[i];
+ const text=i===1?'#fff':'#111';
+ return `<g transform="translate(${x} ${y})" filter="url(#shadow)"><path d="M-27 8 L-12 -7 L20 -5 L30 4 L14 12 L-19 12 Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/><path d="M-9 -8 L4 -16 L14 -5" fill="none" stroke="${stroke}" stroke-width="2"/><text x="0" y="7" text-anchor="middle" font-size="13" font-weight="900" fill="${text}">${i+1}</text></g>`;
+}
+function wakeSvg(m,frame,i){
+ if(frame<2)return '';
+ const [x,y]=boatPos(m,frame);
+ const w=i===state.mainTactic.boat-1?'#e53935':'#ffffff';
+ return `<path d="M ${x-34} ${y+8} Q ${x-10} ${y+18} ${x+12} ${y+8}" fill="none" stroke="${w}" stroke-width="3" opacity=".7" stroke-dasharray="6 5"/>`;
+}
+function labelSvg(m,i,frame){
+ if(frame<2)return '';
+ const [x,y]=boatPos(m,frame);
+ let label='';
+ if(m.isMain) label=({escape:'先マイ・逃げ',inside:'差し',makuri:'まくり',makurisashi:'まくり差し'})[m.tactic];
+ else if(i===0 && state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(state.mainTactic.tactic)) label='攻めを受ける';
+ else if(i===1 && state.mainTactic.boat!==1 && ['makuri','makurisashi'].includes(state.mainTactic.tactic)) label='差し場を確認';
+ if(!label)return '';
+ return `<g><rect x="${x+20}" y="${y-30}" width="${label.length*15+18}" height="25" rx="8" fill="#ffffff" opacity=".92" stroke="#aac"/><text x="${x+29}" y="${y-13}" font-size="13" font-weight="800" fill="#234">${label}</text></g>`;
 }
 function animateRace(finalOrder){
- const layer=document.getElementById('boatLayer'); if(!layer)return;
- const phases=document.querySelectorAll('.phase');
- const result=document.getElementById('visualResult');
- const legend=document.getElementById('visualLegend');
- legend.innerHTML=state.boats.map((b,i)=>`<span class="legendItem">${i+1}号艇：${tacticName(i)}</span>`).join('');
- let step=0;
- const order=finalOrder.slice();
- const renderPhase=()=>{
-   phases.forEach((p,i)=>p.classList.toggle('active',i===step));
-   layer.innerHTML=order.map((boatIndex,rank)=>{
-     const [x,y]=boatPos(boatIndex+1,step,rank); return boatSvg(boatIndex,x,y,rank,step);
-   }).join('');
-   if(step<4){
-     result.textContent=step===0?'スタート準備中…':step===1?`1マーク：${state.mainTactic.boat}号艇の${tacticName(state.mainTactic.boat-1)}を反映中…`:step===2?'2マーク：順位変動をシミュレーション中…': '3周目：ゴールへ…';
-     step++; setTimeout(renderPhase,850);
+ const pathLayer=document.getElementById('pathLayer'),wakeLayer=document.getElementById('wakeLayer'),layer=document.getElementById('boatLayer'),labelLayer=document.getElementById('labelLayer');
+ const result=document.getElementById('visualResult'),legend=document.getElementById('visualLegend');
+ const main=state.mainTactic.boat;
+ const models=finalOrder.map((boatIndex,rank)=>({i:boatIndex,m:movementModel(boatIndex+1,rank)}));
+ legend.innerHTML=state.boats.map((b,i)=>`<span class="legendItem">${i+1}号艇${i+1===main?'：メイン '+tacticName(i):''}</span>`).join('');
+ let frame=0;
+ const render=()=>{
+   pathLayer.innerHTML=models.map(({i,m})=>`<path d="${pathD(m)}" fill="none" stroke="${i===main-1?'#e53935':'#ffffff'}" stroke-width="${i===main-1?8:3}" opacity="${i===main-1?.9:.72}" stroke-dasharray="${i===main-1?'':'7 7'}" marker-end="url(#${i===main-1?'arrowMain':'arrowNormal'})"/>`).join('');
+   wakeLayer.innerHTML=models.map(({i,m})=>wakeSvg(m,frame,i)).join('');
+   layer.innerHTML=models.map(({i,m},rank)=>{const [x,y]=boatPos(m,frame);return boatSvg(i,x,y,rank)}).join('');
+   labelLayer.innerHTML=models.map(({i,m})=>labelSvg(m,i,frame)).join('');
+   if(frame===0){result.textContent=`①スタート後：STと足の差を反映して第1マークへ進入。メインは${main}号艇・${tacticName(main-1)}。`;frame=1;setTimeout(render,700);}
+   else if(frame===1){result.textContent=`②攻めの仕掛け：${main}号艇の${tacticName(main-1)}で進入ラインを変化。`;frame=2;setTimeout(render,700);}
+   else if(frame===2){
+     if(['makuri','makurisashi'].includes(state.mainTactic.tactic) && main!==1) result.textContent=`③1号艇が攻めを受ける → ターンが膨らむ想定。2号艇には差し場が発生する可能性を表示。`;
+     else if(state.mainTactic.tactic==='inside' && main!==1) result.textContent=`③${main}号艇が内側へ差し込み、先行艇の引き波を越えて内へ入る動きを表示。`;
+     else result.textContent=`③1M直前：各艇の旋回位置と出足を比較。`;
+     frame=3;setTimeout(render,750);
    }else{
-     const top=order.slice(0,3).map(i=>i+1).join('-');
-     result.textContent=`予測最終順位：${order.map(i=>i+1).join(' → ')}　｜　三連単：${top}`;
+     const top=finalOrder.slice(0,3).map(i=>i+1).join('-');
+     result.textContent=`④出足の瞬間：1M進入順 ${finalOrder.map(i=>i+1).join(' → ')} ｜ 三連単上位 ${top}`;
    }
  };
- renderPhase();
+ render();
 }
 document.getElementById('run').onclick=()=>{render();document.getElementById('status').textContent='計算中…';setTimeout(simulate,30)};document.getElementById('reset').onclick=()=>location.reload();
 </script>
