@@ -17,6 +17,26 @@ main{max-width:1050px;margin:auto;padding:12px 10px 50px}.card{background:#fff;b
 .results{display:none}.results.show{display:block}.resultTable{width:100%;border-collapse:collapse;font-size:13px}.resultTable th,.resultTable td{border:1px solid #dbe3ec;padding:8px;text-align:center}.resultTable th{background:#f3f7fb}.combo{font-weight:900;letter-spacing:1px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}footer{text-align:center;color:#718096;font-size:11px;padding:5px}
 @media(max-width:700px){.race{grid-template-columns:1fr}.weatherGrid{grid-template-columns:1fr}.boats{grid-template-columns:1fr 1fr}.two{display:block}.two>div{margin-bottom:14px}.card{padding:13px}.boats{gap:8px}.body input,.body select{font-size:16px}}
 @media(max-width:420px){.boats{grid-template-columns:1fr}.simBtns button{font-size:14px}}
+
+/* --- mobile select UI fix --- */
+#boats, #past { width:100%; }
+.boatCard { box-sizing:border-box; }
+#boats select, #past select {
+  display:block !important;
+  width:100% !important;
+  min-height:48px !important;
+  box-sizing:border-box !important;
+  font-size:16px !important;
+  padding:10px 12px !important;
+  border:1px solid #afc3da !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  color:#1f2937 !important;
+  -webkit-appearance:auto !important;
+  appearance:auto !important;
+  pointer-events:auto !important;
+}
+
 </style>
 </head>
 <body>
@@ -128,4 +148,12 @@ const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,20);document.getEleme
 document.getElementById('results').classList.add('show');document.getElementById('status').textContent=N.toLocaleString()+'回のシミュレーション完了';setTimeout(()=>document.getElementById('results').scrollIntoView({behavior:'smooth'}),50)}
 document.getElementById('run').onclick=()=>{render();document.getElementById('status').textContent='計算中…';setTimeout(simulate,30)};document.getElementById('reset').onclick=()=>location.reload();
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  if (typeof renderBoats === 'function') renderBoats();
+  if (typeof renderPast === 'function') renderPast();
+});
+</script>
+
 </body></html>
